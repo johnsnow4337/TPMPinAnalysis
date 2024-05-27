@@ -1,0 +1,182 @@
+//------------------------------------------------
+//--- 010 Editor v14.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#include <TPM20.h>
+
+enum<WORD> KEY_FLAGS{
+    EnhancedPin  = 0x4,
+    NonEnhancedPin = 0x10  
+};
+struct PCR_BITMAP;
+
+
+string readPCR_BITMAP(PCR_BITMAP &pcrs){
+    local string out = "PCRs: ";
+    if (pcrs.PCR_0){
+        out+="0, ";
+        };
+    if (pcrs.PCR_1){
+        out+="1, ";
+    }; 
+    if (pcrs.PCR_2){
+        out+="2, ";
+    }; 
+    if (pcrs.PCR_3){
+        out+="3, ";
+    };
+    if (pcrs.PCR_4){
+        out+="4, ";
+    };
+    if (pcrs.PCR_5){
+        out+="5, ";
+    }; 
+    if (pcrs.PCR_6){
+        out+="6, ";
+    }; 
+    if (pcrs.PCR_7){
+        out+="7, ";
+    }; 
+    if (pcrs.PCR_8){
+        out+="8, ";
+    }; 
+    if (pcrs.PCR_9){
+        out+="9, ";
+    }; 
+    if (pcrs.PCR_10){
+        out+="10, ";
+    }; 
+    if (pcrs.PCR_11){
+        out+="11, ";
+    }; 
+    if (pcrs.PCR_12){
+        out+="12, ";
+    }; 
+    if (pcrs.PCR_13){
+        out+="13, ";
+    }; 
+    if (pcrs.PCR_14){
+        out+="14, ";
+    }; 
+    if (pcrs.PCR_15){
+        out+="15, ";
+    }; 
+    if (pcrs.PCR_16){
+        out+="16, ";
+    }; 
+    if (pcrs.PCR_17){
+        out+="17, ";
+    };
+    if (pcrs.PCR_18){
+        out+="18, ";
+    }; 
+    if (pcrs.PCR_19){
+        out+="19, ";
+    }; 
+    if (pcrs.PCR_20){
+        out+="20, ";
+    }; 
+    if (pcrs.PCR_21){
+        out+="21, ";
+    }; 
+    if (pcrs.PCR_22){
+        out+="22, ";
+    }; 
+    if (pcrs.PCR_23){
+        out+="23, ";
+    }; 
+    out = StrDel(out, Strlen(out)-2, 2);
+    return out;
+    };
+
+    
+typedef struct{
+    short PCR_0 : 1;
+    short PCR_1 : 1;
+    short PCR_2 : 1;
+    short PCR_3 : 1;
+    short PCR_4 : 1;
+    short PCR_5 : 1;
+    short PCR_6 : 1;
+    short PCR_7 : 1;
+    short PCR_8 : 1;
+    short PCR_9 : 1;
+    short PCR_10 : 1;
+    short PCR_11 : 1;
+    short PCR_12 : 1;
+    short PCR_13 : 1;
+    short PCR_14 : 1;
+    short PCR_15 : 1;
+    byte PCR_16 : 1;
+    byte PCR_17 : 1;
+    byte PCR_18 : 1;
+    byte PCR_19 : 1;
+    byte PCR_20 : 1;
+    byte PCR_21 : 1;
+    byte PCR_22 : 1;
+    byte PCR_23 : 1;
+    }  PCR_BITMAP  <read = readPCR_BITMAP>;
+
+struct SENSITIVE_DUMMY (uint outPrivate_size) {
+          /** Dummy TPM2B_SENSITIVE structure to work out size of encrypted data **/
+      UINT16            sensitive_size;
+      
+      // TPMT_SENSITIVE    sensitiveArea:
+
+      /* sensitiveType is the same as outPublic.publicArea.Type 
+      *  TPM 2.0 Part 2 Page 158 (TCG, 2024b:158)
+      */
+      TPMI_ALG_PUBLIC             sensitiveType;
+      
+      // TPM2B_AUTH        authValue;
+      UINT16    authValue_size;
+      BYTE      authValue_buffer[32]; /*Known AuthData size from Bitlocker RE*/
+      
+      // TPM2B_DIGEST      seedValue;
+      UINT16    seedValue_size;
+      /* Size taken from outPublic.publicArea.nameAlg
+      *  TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+      */
+      BYTE      seedValue_buffer[32];
+
+      // TPMU_SENSITIVE_COMPOSITE sensitive(sensitiveType):
+      // TPM2B_SENSITIVE_DATA   bits:
+      UINT16    bits_size;
+      BYTE      EncryptedDatums[outPrivate_size
+                                    -sizeof(integrityOuter)-sizeof(integrityInner)
+                                        -sizeof(sensitive_size)-sizeof(sensitiveType)
+                                            -sizeof(authValue_size)-sizeof(authValue_buffer)
+                                                -sizeof(seedValue_size)-sizeof(seedValue_buffer)
+                                                    -sizeof(bits_size)];
+};
+struct TPM2B_PRIVATE_W_DUMMY{
+          
+      // TPM2B_PRIVATE outPrivate:
+      UINT16    outPrivate_size;
+      
+      // _PRIVATE buffer[size]:
+      TPM2B_DIGEST      integrityOuter;
+      TPM2B_DIGEST      integrityInner;
+      // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
+      SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
+    };
+      BigEndian();
+      
+      // Can be uncommented but latter structure is used to determine encrypted data size
+      // TPM2B_PRIVATE outPrivate; 
+      TPM2B_PRIVATE_W_DUMMY outPrivateWDummy;
+
+      TPM2B_PUBLIC outPublic;
+      TPM2B_DIGEST PCRDigest;
+      LittleEndian();
+      byte sizeOfBitmap <format = hex>;
+      PCR_BITMAP PCRBitmap_End;

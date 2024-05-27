@@ -1,0 +1,96 @@
+//------------------------------------------------
+//--- 010 Editor v14.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+// Table "Definition of TPM_ST Constants" (Part 2: Structures)
+#include <Tpm20.h>
+BigEndian();
+    struct SENSITIVE_DUMMY (uint outPrivate_size) {
+          /** Dummy TPM2B_SENSITIVE structure to work out size of encrypted data **/
+      UINT16            sensitive_size;
+      
+      // TPMT_SENSITIVE    sensitiveArea:
+
+      /* sensitiveType is the same as outPublic.publicArea.Type 
+      *  TPM 2.0 Part 2 Page 158 (TCG, 2024b:158)
+      */
+      TPMI_ALG_PUBLIC             sensitiveType;
+      
+      // TPM2B_AUTH        authValue;
+      UINT16    authValue_size;
+      BYTE      authValue_buffer[32]; /*Guessed authValue size*/
+      
+      // TPM2B_DIGEST      seedValue;
+      UINT16    seedValue_size;
+      /* Size taken from outPublic.publicArea.nameAlg
+      *  TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+      */
+      BYTE      seedValue_buffer[32];
+
+      // TPMU_SENSITIVE_COMPOSITE sensitive(sensitiveType):
+      // TPM2B_SENSITIVE_DATA   bits:
+      UINT16    bits_size;
+      BYTE      EncryptedDatums[outPrivate_size
+                                    -sizeof(integrityOuter)-sizeof(integrityInner)
+                                        -sizeof(sensitive_size)-sizeof(sensitiveType)
+                                            -sizeof(authValue_size)-sizeof(authValue_buffer)
+                                                -sizeof(seedValue_size)-sizeof(seedValue_buffer)
+                                                    -sizeof(bits_size)];
+};
+struct TPM2B_PRIVATE_W_DUMMY{
+          
+      // TPM2B_PRIVATE outPrivate:
+      UINT16    outPrivate_size;
+      
+      // _PRIVATE buffer[size]:
+      TPM2B_DIGEST      integrityOuter;
+      TPM2B_DIGEST      integrityInner;
+      // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
+      SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
+    };
+struct TPM2_StartAuthSession{
+    TPMI_ST_COMMAND_TAG tag <format = hex>;
+    UINT32  commandSize <format = hex>;
+    TPM_CC  commandCode <format = hex>;
+    TPMI_DH_OBJECT  tpmKey <format = hex>;
+    TPMI_DH_ENTITY  bind <format = hex>;
+    TPM2B_NONCE nonceCaller <format = hex>;
+    TPM_SE  sessionType <format = hex>;
+    TPMT_SYM_DEF    symmetric <format = hex>;
+    TPMI_ALG_HASH   authHash <format = hex>;
+    };
+struct TPM2_Create_Request{
+    TPMI_ST_COMMAND_TAG tag <format = hex>;
+    UINT32  commandSize ;
+    TPM_CC  commandCode <format = hex>;
+    TPMI_DH_OBJECT  parentHandle <format = hex>;
+      UINT16    size;
+      TPMS_SENSITIVE_CREATE insensitive;  
+
+  /*Wraps for TPMU_SENSITIVE_CREATE*/
+  //BYTE      buffer[size];    
+    TPM2B_PUBLIC    inPublic;
+    TPM2B_DATA  outsideInfo;
+    TPML_PCR_SELECTION creationPCR;
+    };
+struct TPM2_Create_Response{
+    TPMI_ST_COMMAND_TAG tag <format = hex>;
+    UINT32  responseSize ;
+    TPM_RC  responseCode <format = hex>;
+    UINT32  unknown;
+    TPM2B_PRIVATE_W_DUMMY  outPrivate <format = hex>;
+    TPM2B_PUBLIC outPublic;
+    
+    TPM2B_CREATION_DATA    creationData;
+    TPM2B_DIGEST  creationHash;
+    TPMT_TK_CREATION creationTicket;
+    };
+TPM2_Create_Request create;

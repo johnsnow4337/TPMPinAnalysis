@@ -3,10 +3,16 @@
 //--- Bitlocker Metadata Analyser
 //------------------------------------------------
 
-// Basics.h from https://github.com/DeKaDeNcE/wow010/blob/master/basics.h : (relaxok, 2018)
+
+//----------------------
+//--- Basics.h from https://github.com/DeKaDeNcE/wow010/blob/master/basics.h : (relaxok, 2018)
 // To include the definition for int24_t
 #include <basics.h>
+//---------------------//
 
+
+//--------------------------------------
+//--- Required definitions from Drive.bt (Vernoux and SweetScape Software, 2022)
 typedef enum <uint32> {
     FILE_SYSTEM_TYPE_NONE    = 0x0000,
     FILE_SYSTEM_TYPE_IFS     = 0x0010,
@@ -29,7 +35,11 @@ typedef enum <uchar>
     FLOPPY_160K                   = 0xfe,
     FLOPPY_320K_2                 = 0xff,
 } MEDIA <format=hex>;
+//--------------------------------------//
 
+//----------------------------------------
+//--- Altered FAT_BOOTSECTOR from Drive.bt (Vernoux and SweetScape Software, 2022)
+//--- Alterations denoted by: "//---"
 typedef struct  {
     local INT64 tmp <hidden=true>;
     local DWORD ClusterSize;
@@ -77,16 +87,21 @@ typedef struct  {
     CHAR   FileSystemLabel[8] <format=hex>; // only valid if ExtBootSignature == 0x29
 
     // PREVENTS ARRAY OPTIMIZATION
-    // Added Bitlocker Specific Metadata
     tmp = 510 - (FTell() - startof(jmp)) - 110; // 420 for FAT32, 448 for FAT16/12
+
+    //--------------------------------------
+    //--- Added Bitlocker Specific Metadata
     UBYTE  BootCode1[70]       <format=hex>;
     GUID   BitlockerID;
     uint64  FVEMetatdata1      <format=hex>;
     uint64  FVEMetatdata2      <format=hex>;
     uint64  FVEMetatdata3      <format=hex>;
     UBYTE  BootCode[tmp-3]      <format=hex>;
+    //--- String offsets identified from:
+    //--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Commands/command_vbr.cpp#L292 (thewhiteninja, 2022)
     UBYTE   stringOffsets[3]   <format=hex>;
     WORD   EndOfSectorMarker  <format=hex>;
+    //--------------------------------------//
 
     // Helpers to make FAT12/16/32 more common -- all of which prevent array optimization
     ClusterSize      = this.BytesPerSector * this.SectorsPerCluster;
@@ -107,19 +122,27 @@ typedef struct  {
     } else {
         FsType = FILE_SYSTEM_TYPE_NONE; // oops
     }
-    //https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Commands/command_vbr.cpp#L292
+    
+    //--------------------------------------
+    //--- String offsets calculations adapted from:
+    //--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Commands/command_vbr.cpp#L292 (thewhiteninja, 2022)
     FSeek(header.stringOffsets[0]+0x100);
-local string stringStore;
-stringStore = ReadString(FTell(),0x30);
-local int strLen = Strstr(stringStore,'\xFF');
-char string1[strLen]; 
-FSeek(header.stringOffsets[1]+0x100);
-stringStore = ReadString(FTell(),0x30);
-strLen = Strstr(stringStore,'\xFF');
-char string2[strLen]; 
-FSeek(header.stringOffsets[2]+0x100);
-string string3;
+    local string stringStore;
+    stringStore = ReadString(FTell(),0x30);
+    local int strLen = Strstr(stringStore,'\xFF');
+    char string1[strLen]; 
+    FSeek(header.stringOffsets[1]+0x100);
+    stringStore = ReadString(FTell(),0x30);
+    strLen = Strstr(stringStore,'\xFF');
+    char string2[strLen]; 
+    FSeek(header.stringOffsets[2]+0x100);
+    string string3;
+    //--------------------------------------//
 } FAT_BOOTSECTOR <read=ReadFAT_BOOTSECTOR, optimize=false>;
+//---------------------------------------//
+
+//---------------------------------------------------------------------------------
+//--- FAT Boot sector display from Drive.bt (Vernoux and SweetScape Software, 2022)
 string ReadFAT_BOOTSECTOR( FAT_BOOTSECTOR &boot )
 {
     return boot.VolumeLabel;
@@ -170,65 +193,28 @@ DWORD ReadFAT_BOOTSECTOR_CountOfDataClusters( FAT_BOOTSECTOR &boot )
     countOfClusters  = dataSectors / boot.SectorsPerCluster; // note that this rounds down
     return countOfClusters;
 }
+//--------------------------------------------------------------------------//
 
+
+//--- Compute bitlocker header
 FAT_BOOTSECTOR header;
 
 
+
+//---------------------------------------
+//---TPM20.h from:
+//---https://github.com/tianocore/edk2/tree/master/MdePkg/Include/IndustryStandard (Intel, 2015)
+//---With modifications for the 010 editor syntax and operation, including modifying TPM12.h (Intel, 2008)
+//---TPM12.h modifications: remove all pointers ('*'s); remove '#pragma pack's; and add UINT8 definition.
+//---See TPM20.h for modifications denoted by "//---"
 #include <TPM20.h>
-struct bde_metadata_block_header_v1
-{
-	/* The signature
-	 * Consists of 8 bytes
-	 * Contains: -FVE-FS-
-	 */
-	char signature[ 8 ];
+//---------------------------------------//
 
-	/* The size
-	 * Consists of 2 bytes
-	 */
-	short size;
 
-	/* The version
-	 * Consists of 2 bytes
-	 */
-	short version;
 
-	/* Unknown
-	 * Consists of 2 bytes
-	 */
-	short unknown1 <format=hex>;
-
-	/* Unknown
-	 * Consists of 2 bytes
-	 */
-	short unknown2 <format=hex>;
-
-	/* Unknown
-	 * Consists of 16 bytes
-	 */
-	byte unknown3[ 16 ] <format=hex>;
-
-	/* The first FVE metadata offset
-	 * Consists of 8 bytes
-	 */
-	int64 first_metadata_offset <format=hex>;
-
-	/* The second FVE metadata offset
-	 * Consists of 8 bytes
-	 */
-	int64 second_metadata_offset <format=hex>;
-
-	/* The third FVE metadata offset
-	 * Consists of 8 bytes
-	 */
-	int64 third_metadata_offset <format=hex>;
-
-	/* The MFT mirror cluster block number
-	 * Consists of 8 bytes
-	 */
-	int64 mft_mirror_cluster_block <format=hex>;
-};
-
+//---------------------------------------
+//--- Initial BDE metadata header from https://github.com/libyal/libbde/blob/main/libbde/bde_metadata.h#L90-L152 (Metz, 2022)
+//--- Retyped for the 010 editor template
 struct bde_metadata_block_header_v2
 {
 	/* The signature
@@ -293,154 +279,130 @@ struct bde_metadata_block_header_v2
 	int64 volume_header_offset <format=hex>;
 };
 
-struct bde_metadata_header_v1
-{
-	/* The metadata size
-	 * Consists of 4 bytes
-	 */
-	int metadata_size;
 
-	/* The version
-	 * Consists of 4 bytes
-	 */
-	int version;
+/*---
+//--- Structure for datum types global (inferred from fveapi.dll source code and data layout)---//
 
-	/* The metadata header size
-	 * Consists of 4 bytes
-	 */
-	int metadata_header_size;
+struct DatumTypeStruct{
+    short   DatumHeaderSize;
+    bool    isNested;
+}
 
-	/* The metadata size copy
-	 * Consists of 4 bytes
-	 */
-	int metadata_size_copy;
+#define MAX_DATUM_TYPES 22
+typedef DatumTypeStruct* DatumTypes[MAX_DATUM_TYPES];
+//--- An array of the values in fveapi.dll's Global
+local DatumTypeStruct DatumTypes[MAX_DATUM_TYPES] = {
+//---FveDatumErasedTypeProp, 0,              {08h,false},
+//---FveDatumKeyTypeProp, 1                  {0Ch,0},
+//---FveDatumUnicodeTypeProp, 2              {08h,0},
+//---FveDatumStretchKeyTypeProp, 3           {1Ch,true},
+//---FveDatumUseKeyTypeProp, 4               {0Ch,true},
+//---FveDatumAesCcmEncTypeProp, 5            {24h,0},
+//---FveDatumTpmEncBlobTypeProp, 6           {0Ch,0},
+//---FveDatumValidationInfoTypeProp, 7       {08h,0},
+//---FveDatumVmkInfoTypeProp, 8              {24h,true},    
+//---FveDatumExternalInfoTypeProp, 9         {20h,true},     
+//---FveDatumUpdateTypeProp, 10              {2Ch,true},    
+//---FveDatumErrorTypeProp, 11               {34h,0},   
 
-	/* The volume identifier
-	 * Consists of 16 bytes
-	 */
-	GUID volume_identifier;
-
-	/* The next nonce counter
-	 * Consists of 4 bytes
-	 */
-	int next_nonce_counter;
-
-	/* The encryption method
-	 * Consists of 2 bytes
-	 */
-	ushort encryption_method <format=hex>;
-
-	/* The encryption method copy
-	 * Consists of 2 bytes
-	 */
-	ushort encryption_method_copy <format=hex>;
-
-	/* The creation date and time
-	 * Consists of 8 bytes
-	 * Contains a filetime
-	 */
-	FILETIME creation_time;
+//---According to https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L269
+//---The below datums were added with Windows 7  (Coltel and Consultants, 2022)
+//---FveDatumAsymEncTypeProp, 12             {08h,0},
+//---FveDatumExportedKeyTypeProp, 13         {08h,0},
+//---FveDatumPublicKeyInfoTypeProp, 14,      {08h,0},
+//---FveDatumVirtualizationInfoTypeProp, 15, {18h,0},
+//---FveDatumSimpleTypeProp1, 16,            {0Ch,0},
+//---FveDatumSimpleTypeProp2, 17,            {0Ch,0},
+//---FveDatumConcatHashKeyTypeProp, 18,      {1Ch,0},
+//---FveDatumSimpleTypeProp3, 19,            {0Ch,0},
+//---FveDatumSimpleLargeTypeProp, 20,        {10h,0},
+//---FveDatumBackupInfoTypeProp, 21,         {1Ch,0}
 };
+---*/
 
-/*
-enum<ushort> ENC_TYPES{
-NOT_ENC_OR_Ext = 0x0000,
-
-STRETCH_0 = 0x1000,
-STRETCH_1 = 0x1001,
-
-AES_CCM_256_0 = 0x2000,
-AES_CCM_256_1 = 0x2001,
-AES_CCM_256_2 = 0x2002,
-AES_CCM_256_3 = 0x2003,
-AES_CCM_256_4 = 0x2004,
-AES_CCM_256_5 = 0x2005,
-
-AES_CBC_128_ED = 0x8000,
-AES_CBC_256_ED = 0x8001,
-AES_CBC_128 = 0x8003,
-AES_CBC_256 = 0x8003,
-AES_XTS_128 = 0x8004,
-AES_XTS_256 = 0x8005
-};
-*/
+//---------------------------------------
+//--- These structures are taken from an fveapi.dll Global at virtual offset: 0x1800bae90 with structure DatumTypes (see above), 
+//--- The datum names are taken from fveapi.pdb with FveDatumSimpleTypePropX enumerated.
+//--- The same DatumTypes structure is found in bootmgfw.efi Global at virtual offset: 0x10013490.
+//--- This Global is referenced in FveDatumHeaderSafe in both executables among other references.
 enum<WORD> DATUM_TYPES{
-FveDatumErasedTypeProp = 0,
-FveDatumKeyTypeProp,
-FveDatumUnicodeTypeProp,
-FveDatumStretchKeyTypeProp,
-FveDatumUseKeyTypeProp,
-FveDatumAesCcmEncTypeProp,
-FveDatumTpmEncBlobTypeProp,
-FveDatumValidationInfoTypeProp,
-FveDatumVmkInfoTypeProp,  
-FveDatumExternalInfoTypeProp,    
-FveDatumUpdateTypeProp, 
-FveDatumErrorTypeProp,   
-FveDatumAsymEncTypeProp,
-FveDatumExportedKeyTypeProp,
-FveDatumPublicKeyInfoTypeProp,
-FveDatumVirtualizationInfoTypeProp,
-FveDatumSimpleTypeProp1,
-FveDatumSimpleTypeProp2,
-FveDatumConcatHashKeyTypeProp,
-FveDatumSimpleTypeProp3,
-FveDatumSimpleLargeTypeProp,
-FveDatumBackupInfoTypeProp
+    FveDatumErasedTypeProp = 0,
+    FveDatumKeyTypeProp,
+    FveDatumUnicodeTypeProp,
+    FveDatumStretchKeyTypeProp,
+    FveDatumUseKeyTypeProp,
+    FveDatumAesCcmEncTypeProp,
+    FveDatumTpmEncBlobTypeProp,
+    FveDatumValidationInfoTypeProp,
+    FveDatumVmkInfoTypeProp,  
+    FveDatumExternalInfoTypeProp,    
+    FveDatumUpdateTypeProp, 
+    FveDatumErrorTypeProp,   
+    FveDatumAsymEncTypeProp,
+    FveDatumExportedKeyTypeProp,
+    FveDatumPublicKeyInfoTypeProp,
+    FveDatumVirtualizationInfoTypeProp,
+    FveDatumSimpleTypeProp1,
+    FveDatumSimpleTypeProp2,
+    FveDatumConcatHashKeyTypeProp,
+    FveDatumSimpleTypeProp3,
+    FveDatumSimpleLargeTypeProp,
+    FveDatumBackupInfoTypeProp
 };
+//-------------------------------------------//
 
+
+//-------------------------------------------------
+//--- Enum of Datum 'roles'
+//--- Created from:
+//--- https://github.com/mbroz/cryptsetup/blob/main/lib/bitlk/bitlk.h#L57-L65 (Trefny, Broz and Hat, 2024)
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28 (thewhiteninja, 2021)
+//--- https://github.com/libyal/libbde/blob/main/libbde/libbde_definitions.h.in#L88-L100 (Metz, 2022)
+//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L78-L93 (Coltel and Consultants, 2022;)
+
+//--- TPM + PIN specific roles are validated independently (denoted with //*//)
 enum<WORD> ROLE_TYPES{
-PROP = 0x0000,
-VMK = 0x2,
-FVEK,
-VALID,
-EXT_KEY = 0x6,
-DESCRIPTION,
-/*https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28*/
-FVEK_BAK = 0xb, /*Maybe AutoUnlock*/
-VOL_HEAD = 0xf    
-};
+    PROPERTY        = 0x0, //*//
 
-local int DatumSizes[22] = {
-/*FveDatumErasedTypeProp, 0,*/              08h
-/*FveDatumKeyTypeProp, 1*/,                 0Ch
-/*FveDatumUnicodeTypeProp, 2*/,             08h
-/*FveDatumStretchKeyTypeProp, 3*/,          1Ch
-/*FveDatumUseKeyTypeProp, 4*/,              0Ch
-/*FveDatumAesCcmEncTypeProp, 5*/,           24h
-/*FveDatumTpmEncBlobTypeProp, 6*/,          0Ch
-/*FveDatumValidationInfoTypeProp, 7*/,      08h
-/*FveDatumVmkInfoTypeProp, 8*/,             24h    
-/*FveDatumExternalInfoTypeProp, 9*/,        20h     
-/*FveDatumUpdateTypeProp, 10*/,             2Ch    
-/*FveDatumErrorTypeProp, 11*/,              34h    
-/*FveDatumAsymEncTypeProp, 12*/,            08h
-/*FveDatumExportedKeyTypeProp, 13*/,        08h
-/*FveDatumPublicKeyInfoTypeProp, 14*/,      08h
-/*FveDatumVirtualizationInfoTypeProp, 15*/, 18h
-/*FveDatumSimpleTypeProp1, 16*/,            0Ch
-/*FveDatumSimpleTypeProp2, 17*/,            0Ch
-/*FveDatumConcatHashKeyTypeProp, 18*/,      1Ch
-/*FveDatumSimpleTypeProp3, 19*/,            0Ch
-/*FveDatumSimpleLargeTypeProp, 20*/,        10h
-/*FveDatumBackupInfoTypeProp, 21*/,         1Ch
+    VMK             = 0x2, //*//
+    FVEK            = 0x3, //*//
+    VALIDATION      = 0x4,
+
+    EXT_KEY         = 0x6,
+    DESCRIPTION     = 0x7, //*//
+
+    //---AKA AUTO_UNLOCK in thewhiteninja (2021)---//
+    FVEK_BAK        = 0xb,
+
+    VOL_HEAD        = 0xf, //*//
+
+    //---Exclusively listed in Trefny, Broz and Hat (2024)---//
+    VOL_GUID        = 0x19
 };
+//-----------------------------------------------//
+
 
 enum<ushort> cipher_types
 {
-    /** From FveVmkInfoConvertCreateParams and FveVmkInfoCreate and FveDatumPerformConcatHash**/
-	STRETCH_KEY   = 0x1000,
+    //---------------------------------------
+    //---These Encryption types from:
+    //---FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
+    //---in fveapi.dll (function names from fveapi.pdb)---//
+	STRETCH_RECOVERY_PASSWORD   = 0x1000,
+    STRETCH_KEY_1   = 0x1001,
+
 	AES_CCM_256_0 = 0x2000,
 	AES_CCM_256_1 = 0x2001,
 	AES_CCM_256_EXTERN_KEY    = 0x2002,
 	AES_CCM_256_VMK           = 0x2003,
 	AES_CCM_256_PIN = 0x2004,
-    /* From FveDatumPerformConcatHash */
+    
+    //---From FveDatumPerformConcatHash
 	AES_CCM_256_CONCAT_HASH      = 0x2005,
 	AES_CCM_256_PUBLIC_KEY      = 0x2006,
 	AES_CCM_256_PASSPHRASE     = 0x2007,
     AES_CCM_256_REOCVERY_PASSWORD = 0x2008,
-    /**                                                         **/
+    //---------------------------------------//
     
 	AES_128_DIFFUSER    = 0x8000,
 	AES_256_DIFFUSER    = 0x8001,
@@ -475,125 +437,6 @@ struct  _FVE_DATUM
   ROLE_TYPES Role;
   DATUM_TYPES Type;
   WORD Flags;
-};
-
-// BitLocker key metadata blob. (BitLocker Drive Encryption (BDE) format.asciidoc 5.4)
-struct _FVE_DATUM_KEY
-{
-  _FVE_DATUM h;
-  WORD KeyType;
-  WORD KeyFlags; // bit 0 internally used as "derived from TPM, ensure secureboot policy flag bit2 is set", but not ever set elsewhere...
-  byte KeyData[h.StructureSize-12];
-};
-
-struct _FVE_DATUM_VMK_INFO
-{
-  _FVE_DATUM h;
-  GUID Identifier;
-  FILETIME DateTime;
-  WORD VmkHints;
-  WORD ProtectionType;
-};
-// BitLocker key metadata blob. (BitLocker Drive Encryption (BDE) format.asciidoc 5.4)
-
-
-struct bde_metadata_entry_v1
-{
-	/* The size
-	 * Consists of 2 bytes
-	 */
-	int size[ 2 ];
-
-	/* The type
-	 * Consists of 2 bytes
-	 */
-	int type[ 2 ];
-
-	/* The value type
-	 * Consists of 2 bytes
-	 */
-	int value_type[ 2 ];
-
-	/* The version
-	 * Consists of 2 bytes
-	 */
-	int version[ 2 ];
-
-};
-
-struct bde_metadata_entry_key_header
-{
-	/* The encryption method
-	 * Consists of 4 bytes
-	 */
-	cipher_types encryption_method <format = hex>;
-};
-
-struct bde_metadata_entry_stretch_key_header
-{
-	/* The encryption method
-	 * Consists of 4 bytes
-	 */
-	cipher_types encryption_method[ 4 ];
-
-	/* The salt
-	 * Consists of 16 bytes
-	 */
-	int salt[ 16 ];
-};
-
-struct bde_metadata_entry_aes_ccm_encrypted_key_header
-{
-	/* The nonce date and time
-	 * Consists of 8 bytes
-	 * Contains a filetime
-	 */
-	FILETIME nonce_time;
-
-	/* The nonce counter
-	 * Consists of 4 bytes
-	 */
-	int nonce_counter;
-};
-
-struct bde_metadata_entry_volume_master_key_header
-{
-	/* The identfier
-	 * Consists of 16 bytes
-	 * Contains a GUID
-	 */
-	GUID identifier;
-
-	/* The (last) modification date and time
-	 * Consists of 8 bytes
-	 * Contains a filetime
-	 */
-	FILETIME modification_time;
-
-	/* Unknown
-	 * Consists of 2 bytes
-	 */
-	short unknown1;
-
-	/* The protection type
-	 * Consists of 2 bytes
-	 */
-	int protection_type[ 2 ];
-};
-
-struct bde_metadata_entry_external_key_header
-{
-	/* The identfier
-	 * Consists of 16 bytes
-	 * Contains a GUID
-	 */
-	int identifier[ 16 ];
-
-	/* The (last) modification date and time
-	 * Consists of 8 bytes
-	 * Contains a filetime
-	 */
-	int modification_time[ 8 ];
 };
 
 typedef struct _extended_info {
@@ -650,28 +493,19 @@ string READ_PROTECTOR_TYPE(PROTECTOR_TYPES &flag){
     }
     return RetStr;
 };
-/*
-struct PROTECTOR_TYPES{
-byte    RESERVED;    
-byte    TPM : 1;
-byte    EXTERNAL_KEY : 1;
-byte    PIN : 1  ;
-byte    RECOVERY_PASSWORD   : 1;
-byte    UKNOWN  :   1;
-byte    PASSPHRASE  :   1;
-};
-*/
 
-/* Potential Key Flags suggested by
-*  FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
-*/
+//---------------------------------------
+//---Key Flags suggested by
+//---FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
+//---Supported by testing
 enum<WORD> KEY_FLAGS{
     EnhancedPin  = 0x4,
     NonEnhancedPin = 0x10  
 };
+//---------------------------------------//
+
+//---Forward declaration
 struct PCR_BITMAP;
-
-
 string readPCR_BITMAP(PCR_BITMAP &pcrs){
     local string out = "PCRs: ";
     if (pcrs.PCR_0){
@@ -778,73 +612,78 @@ typedef struct{
     byte PCR_23 : 1;
     }  PCR_BITMAP  <read = readPCR_BITMAP>;
     
-    struct SENSITIVE_DUMMY (uint outPrivate_size) {
-          /** Dummy TPM2B_SENSITIVE structure to work out size of encrypted data **/
-      UINT16            sensitive_size;
-      
-      // TPMT_SENSITIVE    sensitiveArea:
+struct SENSITIVE_DUMMY (uint outPrivate_size) {
+    //--- Dummy TPM2B_SENSITIVE structure to work out size of encrypted data ---//
+    UINT16            sensitive_size;
+    
+    // TPMT_SENSITIVE    sensitiveArea:
 
-      /* sensitiveType is the same as outPublic.publicArea.Type 
-      *  TPM 2.0 Part 2 Page 158 (TCG, 2024b:158)
-      */
-      TPMI_ALG_PUBLIC             sensitiveType;
-      
-      // TPM2B_AUTH        authValue;
-      UINT16    authValue_size;
-      BYTE      authValue_buffer[32]; /*Guessed authValue size*/
-      
-      // TPM2B_DIGEST      seedValue;
-      UINT16    seedValue_size;
-      /* Size taken from outPublic.publicArea.nameAlg
-      *  TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
-      */
-      BYTE      seedValue_buffer[32];
+        //---------------------------------------
+        //---sensitiveType is the same as outPublic.publicArea.Type 
+        //---TPM 2.0 Part 2 Page 158 (TCG, 2024b:158)
+        //---------------------------------------//
+        TPMI_ALG_PUBLIC             sensitiveType;
+        
+        // TPM2B_AUTH        authValue;
+            UINT16    authValue_size;
+            BYTE      authValue_buffer[32]; /*Guessed authValue size*/
+        
+        // TPM2B_DIGEST      seedValue;
+            UINT16    seedValue_size;
+            //---------------------------------------
+            //---Size taken from outPublic.publicArea.nameAlg
+            //---TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+            //---------------------------------------//
+            BYTE      seedValue_buffer[32];
 
-      // TPMU_SENSITIVE_COMPOSITE sensitive(sensitiveType):
-      // TPM2B_SENSITIVE_DATA   bits:
-      UINT16    bits_size;
-      local long encSize = outPrivate_size
-                                    -sizeof(integrityOuter)-sizeof(integrityInner)
-                                        -sizeof(sensitive_size)-sizeof(sensitiveType)
-                                            -sizeof(authValue_size)-sizeof(authValue_buffer)
-                                                -sizeof(seedValue_size)-sizeof(seedValue_buffer)
-                                                    -sizeof(bits_size);
-      if (encSize == 44){
-          LittleEndian();
-          //_FVE_DATUM h;      // Example Values
-           WORD StructureSize; // 0x002c /*Fixed*/
-           ROLE_TYPES Role;    // 0x0000
-           DATUM_TYPES Type;   // 0x0010 /*Most likely fixed*/
-           WORD Flags;         // 0x0000
-          
-          cipher_types KeyType; /*AES_CCM_256_VMK*/
-          KEY_FLAGS KeyFlags;   /*0x0000*/
-          BYTE VMK[32];
-          BigEndian();
-      }else if (encSize == 80){
-          LittleEndian();
-          //_FVE_DATUM h;      // Example Values
-           WORD StructureSize; // 0x002c /*Fixed*/
-           ROLE_TYPES Role;    // 0x0000
-           DATUM_TYPES Type;   // 0x0010 /*Most likely fixed*/
-           WORD Flags;         // 0x0000
-          FILETIME nonceTime;
-          int nonceCounter;
-          byte HMAC[16] <format=hex>;
-          //AES-CCM Encrypted with SHA256{Stretched PIN + "BitlockerAuthData"}
-           //_FVE_DATUM h;
-            WORD StructureSize; // 0x002c /*Fixed*/
-            ROLE_TYPES Role;
-            DATUM_TYPES Type;   // 0x0010 /*Most likely fixed*/
-            WORD Flags;
-          
-           cipher_types KeyType; 
-           KEY_FLAGS KeyFlags;
-           BYTE IK[32]; //Stored intermediate key not VMK
-           BigEndian();
-      }else{
-      BYTE      EncryptedDatums[encSize];
-      };
+        // TPMU_SENSITIVE_COMPOSITE sensitive(sensitiveType):
+        // TPM2B_SENSITIVE_DATA   bits:
+            UINT16    bits_size;
+            local long encSize = outPrivate_size
+                                        -sizeof(integrityOuter)-sizeof(integrityInner)
+                                            -sizeof(sensitive_size)-sizeof(sensitiveType)
+                                                -sizeof(authValue_size)-sizeof(authValue_buffer)
+                                                    -sizeof(seedValue_size)-sizeof(seedValue_buffer)
+                                                        -sizeof(bits_size);
+            //---Expected TPM Only protected VMK---//
+            if (encSize == 44){
+                LittleEndian();
+                //
+                //_FVE_DATUM h;      //---Example Values
+                    WORD StructureSize; // 0x002c //---Fixed---//
+                    ROLE_TYPES Role;    // 0x0000
+                    DATUM_TYPES Type;   // 0x0010 //---Most likely fixed---//
+                    WORD Flags;         // 0x0000
+                
+                cipher_types KeyType; //---AES_CCM_256_VMK---//
+                KEY_FLAGS KeyFlags;   //---0x0000---//
+                BYTE VMK[32];
+                BigEndian();
+            //---Expected TPM + PIN protected Intemediate Key---//
+            }else if (encSize == 80){
+                LittleEndian();
+                //_FVE_DATUM h;      //---Example Values
+                    WORD StructureSize; // 0x002c //---Fixed---//
+                    ROLE_TYPES Role;    // 0x0000
+                    DATUM_TYPES Type;   // 0x0010 //---Most likely fixed---//
+                    WORD Flags;         // 0x0000
+                FILETIME nonceTime;
+                int nonceCounter;
+                byte HMAC[16] <format=hex>;
+                //AES-CCM Encrypted with SHA256{Stretched PIN + "BitlockerAuthData"}
+                    //_FVE_DATUM h;
+                        WORD StructureSize; // 0x002c //---Fixed---//
+                        ROLE_TYPES Role;
+                        DATUM_TYPES Type;   // 0x0010 //---Most likely fixed---//
+                        WORD Flags;
+                    
+                    cipher_types KeyType; 
+                    KEY_FLAGS KeyFlags;
+                    BYTE IK[32]; //Stored intermediate key not VMK
+                BigEndian();
+            }else{
+            BYTE      EncryptedDatums[encSize];
+            };
 };
 struct TPM2B_PRIVATE_W_DUMMY{
           
@@ -852,10 +691,10 @@ struct TPM2B_PRIVATE_W_DUMMY{
       UINT16    outPrivate_size;
       
       // _PRIVATE buffer[size]:
-      TPM2B_DIGEST      integrityOuter;
-      TPM2B_DIGEST      integrityInner;
-      // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
-      SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
+        TPM2B_DIGEST      integrityOuter;
+        TPM2B_DIGEST      integrityInner;
+        // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
+        SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
     };
 struct _FVE_DATUM_TEMP;
 struct _FVE_DATUM_TEMP
@@ -879,7 +718,7 @@ struct _FVE_DATUM_TEMP
 	 */
 	cipher_types encryption_method <format = hex>;
     
-    /* Potentially represents keyFlags suggested by
+    /* Likely represents keyFlags suggested by
     *  FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
     */
     KEY_FLAGS  keyFlags; 

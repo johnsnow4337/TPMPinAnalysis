@@ -1,3 +1,11 @@
+/** @file
+  TPM Specification data structures (TCG TPM Specification Version 1.2 Revision 103)
+  See http://trustedcomputinggroup.org for latest specification updates
+
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+**/
+
 #ifndef _TPM12_H_
 #define _TPM12_H_
 

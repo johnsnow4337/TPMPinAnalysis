@@ -15,6 +15,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #include <Tpm12.h>
 
+//--- Remove #pragma pack (1) ---//
 
 // Annex A Algorithm Constants
 
@@ -157,6 +158,7 @@ typedef UINT16 TPM_KEY_BITS;
 typedef UINT32 TPM_GENERATED;
 #define TPM_GENERATED_VALUE  (TPM_GENERATED)(0xff544347)
 
+//--- TPM_ALG_ID is converted to enum rather than typedef and #defines ---//
 // Table 7 - TPM_ALG_ID Constants
 enum <UINT16> TPM_ALG_ID{
 //
@@ -211,7 +213,8 @@ typedef UINT16 TPM_ECC_CURVE;
 #define TPM_ECC_BN_P256    (TPM_ECC_CURVE)(0x0010)
 #define TPM_ECC_BN_P638    (TPM_ECC_CURVE)(0x0011)
 #define TPM_ECC_SM2_P256   (TPM_ECC_CURVE)(0x0020)
-    
+
+//--- TPM_CC is converted to enum rather than typedef and #defines ---//
 // Table 11 - TPM_CC Constants (Numeric Order)
 enum <UINT32> TPM_CC{
      TPM_CC_FIRST                       = 0x0000011F,
@@ -326,6 +329,8 @@ enum <UINT32> TPM_CC{
      TPM_CC_EC_Ephemeral                = 0x0000018E,
      TPM_CC_LAST                        = 0x0000018E
 };
+
+//--- TPM_RC is converted to enum rather than typedef and #defines ---//
 // Table 15 - TPM_RC Constants (Actions)
 enum <UINT32> TPM_RC{
      TPM_RC_SUCCESS            = 0x000,
@@ -451,6 +456,7 @@ enum <UINT32> TPM_RC{
      TPM_RC_N_MASK             = 0xF00
 };
 // Table 16 - TPM_CLOCK_ADJUST Constants
+///--- Re-type TPM_CLOCK_ADJUST from INT8 to char ---//
 typedef char TPM_CLOCK_ADJUST;
 #define TPM_CLOCK_COARSE_SLOWER  (TPM_CLOCK_ADJUST)(-3)
 #define TPM_CLOCK_MEDIUM_SLOWER  (TPM_CLOCK_ADJUST)(-2)
@@ -475,6 +481,7 @@ typedef UINT16 TPM_EO;
 #define TPM_EO_BITSET       (TPM_EO)(0x000A)
 #define TPM_EO_BITCLEAR     (TPM_EO)(0x000B)
 
+//--- TPM_ST is converted to enum rather than typedef and #defines ---//
 // Table 18 - TPM_ST Constants
 typedef enum<UINT16> {
     TPM_ST_RSP_COMMAND           = 0x00C4,
@@ -495,29 +502,13 @@ typedef enum<UINT16> {
     TPM_ST_AUTH_SIGNED           = 0x8025,
     TPM_ST_FU_MANIFEST           = 0x8029
 } TPM_ST;
-#define TPM_ST_RSP_COMMAND           (TPM_ST)(0x00C4)
-#define TPM_ST_NULL                  (TPM_ST)(0X8000)
-#define TPM_ST_NO_SESSIONS           (TPM_ST)(0x8001)
-#define TPM_ST_SESSIONS              (TPM_ST)(0x8002)
-#define TPM_ST_ATTEST_NV             (TPM_ST)(0x8014)
-#define TPM_ST_ATTEST_COMMAND_AUDIT  (TPM_ST)(0x8015)
-#define TPM_ST_ATTEST_SESSION_AUDIT  (TPM_ST)(0x8016)
-#define TPM_ST_ATTEST_CERTIFY        (TPM_ST)(0x8017)
-#define TPM_ST_ATTEST_QUOTE          (TPM_ST)(0x8018)
-#define TPM_ST_ATTEST_TIME           (TPM_ST)(0x8019)
-#define TPM_ST_ATTEST_CREATION       (TPM_ST)(0x801A)
-#define TPM_ST_CREATION              (TPM_ST)(0x8021)
-#define TPM_ST_VERIFIED              (TPM_ST)(0x8022)
-#define TPM_ST_AUTH_SECRET           (TPM_ST)(0x8023)
-#define TPM_ST_HASHCHECK             (TPM_ST)(0x8024)
-#define TPM_ST_AUTH_SIGNED           (TPM_ST)(0x8025)
-#define TPM_ST_FU_MANIFEST           (TPM_ST)(0x8029)
 
 // Table 19 - TPM_SU Constants
 typedef UINT16 TPM_SU;
 #define TPM_SU_CLEAR  (TPM_SU)(0x0000)
 #define TPM_SU_STATE  (TPM_SU)(0x0001)
 
+//--- TPM_SE is converted to enum rather than typedef and #defines ---//
 // Table 20 - TPM_SE Constants
 enum<UINT8>  TPM_SE{
     TPM_SE_HMAC = 0x0,
@@ -741,6 +732,7 @@ typedef struct {
   UINT32    reserved11_31 : 21;
 } TPMA_ALGORITHM;
 
+//--- Bitfield is flipped as 010 editor views bit in little endian no-matter what ---//
 // Table 30 - TPMA_OBJECT Bits
   typedef struct {
    UINT32    reserved19_31        : 13;
@@ -921,6 +913,7 @@ typedef struct {
   TPMA_ALGORITHM    attributes;
 } TPMS_ALGORITHM_DESCRIPTION;
 
+//--- Add selector into TPMU_HA union ---//
 // Table 66 - TPMU_HA Union
 typedef union (TPMI_ALG_HASH hashAlg) {
     if (hashAlg == TPM_ALG_SHA1){
@@ -936,18 +929,21 @@ typedef union (TPMI_ALG_HASH hashAlg) {
   };
 } TPMU_HA;
 
+//--- Pass hashAlg as selector to TPMU_HA ---//
 // Table 67 - TPMT_HA Structure
 typedef struct {
   TPMI_ALG_HASH    hashAlg;
   TPMU_HA          digest(hashAlg);
 } TPMT_HA;
 
+//--- Calculate buffer size with size field rather than sizeof (TPMU_HA) ---//
 // Table 68 - TPM2B_DIGEST Structure
 typedef struct {
   UINT16    size;
   BYTE      buffer[size];
 } TPM2B_DIGEST;
 
+//--- Calculate buffer size with size field rather than sizeof (TPMT_HA) ---//
 // Table 69 - TPM2B_DATA Structure
 typedef struct {
   UINT16    size;
@@ -981,12 +977,14 @@ typedef struct {
   BYTE      buffer[MAX_NV_INDEX_SIZE];
 } TPM2B_MAX_NV_BUFFER;
 
+//--- Calculate buffer size with size field rather than sizeof (UINT64) ---//
 // Table 76 - TPM2B_TIMEOUT Structure
 typedef struct {
   UINT16    size;
   BYTE      buffer[size];
 } TPM2B_TIMEOUT;
 
+//--- Calculate buffer size with size field rather than MAX_SYM_BLOCK_SIZE ---//
 // Table 77 -- TPM2B_IV Structure <I/O>
 typedef struct {
   UINT16    size;
@@ -999,18 +997,21 @@ typedef union {
   TPM_HANDLE    handle;
 } TPMU_NAME;
 
+//--- Replace buffer with TPMU_NAME structure ---//
 // Table 79 - TPM2B_NAME Structure
 typedef struct {
   UINT16    size;
   TPMU_NAME      name;
 } TPM2B_NAME;
 
+//--- Calculate pcrSelect size with sizeofSelect field rather than PCR_SELECT_MAX ---//
 // Table 80 - TPMS_PCR_SELECT Structure
 typedef struct {
   UINT8    sizeofSelect;
   BYTE     pcrSelect[sizeofSelect];
 } TPMS_PCR_SELECT;
 
+//--- Calculate pcrSelect size with sizeofSelect field rather than PCR_SELECT_MAX ---//
 // Table 81 - TPMS_PCR_SELECTION Structure
 typedef struct {
   TPMI_ALG_HASH    hash;
@@ -1058,6 +1059,7 @@ typedef struct {
   UINT32    value;
 } TPMS_TAGGED_PROPERTY;
 
+//--- Calculate pcrSelect size with sizeofSelect field rather than PCR_SELECT_MAX ---//
 // Table 90 - TPMS_TAGGED_PCR_SELECT Structure
 typedef struct {
   TPM_PT    tag;
@@ -1065,72 +1067,84 @@ typedef struct {
   BYTE      pcrSelect[sizeofSelect];
 } TPMS_TAGGED_PCR_SELECT;
 
+//--- Calculate commandCodes size with count field rather than MAX_CAP_CC ---//
 // Table 91 - TPML_CC Structure
 typedef struct {
   UINT32    count;
   TPM_CC    commandCodes[count];
 } TPML_CC;
 
+//--- Calculate commandAttributes size with count field rather than MAX_CAP_CC ---//
 // Table 92 - TPML_CCA Structure
 typedef struct {
   UINT32     count;
   TPMA_CC    commandAttributes[count];
 } TPML_CCA;
 
+//--- Calculate algorithms size with count field rather than MAX_ALG_LIST_SIZE ---//
 // Table 93 - TPML_ALG Structure
 typedef struct {
   UINT32        count;
   TPM_ALG_ID    algorithms[count];
 } TPML_ALG;
 
+//--- Calculate handle size with count field rather than MAX_CAP_HANDLES ---//
 // Table 94 - TPML_HANDLE Structure
 typedef struct {
   UINT32        count;
   TPM_HANDLE    handle[count];
 } TPML_HANDLE;
 
+//--- Calculate digests size with count field rather than 8 ---//
 // Table 95 - TPML_DIGEST Structure
 typedef struct {
   UINT32          count;
   TPM2B_DIGEST    digests[count];
 } TPML_DIGEST;
 
+//--- Calculate digests size with count field rather than HASH_COUNT ---//
 // Table 96 -- TPML_DIGEST_VALUES Structure <I/O>
 typedef struct {
   UINT32     count;
   TPMT_HA    digests[count];
 } TPML_DIGEST_VALUES;
 
+//--- Replace buffer with TPML_DIGEST_VALUES structure ---//
 // Table 97 - TPM2B_DIGEST_VALUES Structure
 typedef struct {
   UINT16    size;
   TPML_DIGEST_VALUES      buffer;
 } TPM2B_DIGEST_VALUES;
 
+//--- Calculate pcrSelections size with count field rather than HASH_COUNT ---//
 // Table 98 - TPML_PCR_SELECTION Structure
 typedef struct {
   UINT32                count;
   TPMS_PCR_SELECTION    pcrSelections[count];
 } TPML_PCR_SELECTION;
 
+//--- Calculate algProperties size with count field rather than MAX_CAP_ALGS ---//
 // Table 99 - TPML_ALG_PROPERTY Structure
 typedef struct {
   UINT32               count;
   TPMS_ALG_PROPERTY    algProperties[count];
 } TPML_ALG_PROPERTY;
 
+//--- Calculate tpmProperty size with count field rather than MAX_TPM_PROPERTIES ---//
 // Table 100 - TPML_TAGGED_TPM_PROPERTY Structure
 typedef struct {
   UINT32                  count;
   TPMS_TAGGED_PROPERTY    tpmProperty[count];
 } TPML_TAGGED_TPM_PROPERTY;
 
+//--- Calculate pcrProperty size with count field rather than MAX_PCR_PROPERTIES ---//
 // Table 101 - TPML_TAGGED_PCR_PROPERTY Structure
 typedef struct {
   UINT32                    count;
   TPMS_TAGGED_PCR_SELECT    pcrProperty[count];
 } TPML_TAGGED_PCR_PROPERTY;
 
+//--- Calculate eccCurves size with count field rather than MAX_ECC_CURVES ---//
 // Table 102 - TPML_ECC_CURVE Structure
 typedef struct {
   UINT32           count;
@@ -1240,6 +1254,7 @@ typedef struct {
   TPMU_ATTEST        attested;
 } TPMS_ATTEST;
 
+//--- Replace buffer with TPMS_ATTEST structure ---//
 // Table 117 - TPM2B_ATTEST Structure
 typedef struct {
   UINT16    size;
@@ -1298,6 +1313,7 @@ typedef struct {
   TPMU_SYM_MODE          mode;
 } TPMT_SYM_DEF_OBJECT;
 
+//--- Calculate buffer size with size field rather than MAX_SYM_KEY_BYTES ---//
 // Table 127 - TPM2B_SYM_KEY Structure
 typedef struct {
   UINT16    size;
@@ -1309,10 +1325,11 @@ typedef struct {
   TPMT_SYM_DEF_OBJECT    sym;
 } TPMS_SYMCIPHER_PARMS;
 
+//--- Calculate buffer size with size field rather than MAX_SYM_DATA ---//
 // Table 129 - TPM2B_SENSITIVE_DATA Structure
 typedef struct {
   UINT16    size;
-  /*Wraps for TPMU_SENSITIVE_CREATE*/
+  //--- Wraps for TPMU_SENSITIVE_CREATE ---//
   BYTE      buffer[size];
 } TPM2B_SENSITIVE_DATA;
 
@@ -1345,6 +1362,7 @@ typedef struct {
   TPMI_ALG_KDF     kdf;
 } TPMS_SCHEME_XOR;
 
+//--- Add selector for TPMU_SCHEME_KEYEDHASH union ---//
 // Table 136 - TPMU_SCHEME_KEYEDHASH Union
  typedef union(int selector) {
      if (selector == TPM_ALG_HMAC){
@@ -1355,6 +1373,7 @@ typedef struct {
  } TPMU_SCHEME_KEYEDHASH;
 
 // Table 137 - TPMT_KEYEDHASH_SCHEME Structure
+//--- Use scheme as selector for TPMU_SCHEME_KEYEDHASH union ---//
 typedef struct {
   TPMI_ALG_KEYEDHASH_SCHEME    scheme;
   TPMU_SCHEME_KEYEDHASH        details(scheme);
@@ -1474,6 +1493,7 @@ typedef struct {
   TPMU_ASYM_SCHEME        details;
 } TPMT_RSA_DECRYPT;
 
+//--- Calculate buffer size with size field rather than MAX_RSA_KEY_BYTES ---//
 // Table 158 - TPM2B_PUBLIC_KEY_RSA Structure
 typedef struct {
   UINT16    size;
@@ -1483,12 +1503,14 @@ typedef struct {
 // Table 159 - TPMI_RSA_KEY_BITS Type
 typedef TPM_KEY_BITS TPMI_RSA_KEY_BITS;
 
+//--- Calculate buffer size with size field rather than MAX_RSA_KEY_BYTES/2 ---//
 // Table 160 - TPM2B_PRIVATE_KEY_RSA Structure
 typedef struct {
   UINT16    size;
   BYTE      buffer[size];
 } TPM2B_PRIVATE_KEY_RSA;
 
+//--- Calculate buffer size with size field rather than MAX_ECC_KEY_BYTES ---//
 // Table 161 - TPM2B_ECC_PARAMETER Structure
 typedef struct {
   UINT16    size;
@@ -1571,6 +1593,7 @@ typedef struct {
   TPMU_SIGNATURE         signature;
 } TPMT_SIGNATURE;
 
+//--- Retype ecc as TPMS_ECC_POINT ---//
 // Table 173 - TPMU_ENCRYPTED_SECRET Union
 typedef union {
   TPMS_ECC_POINT    ecc[sizeof (TPMS_ECC_POINT)];
@@ -1579,6 +1602,7 @@ typedef union {
   BYTE    keyedHash[sizeof (TPM2B_DIGEST)];
 } TPMU_ENCRYPTED_SECRET;
 
+//--- Calculate secret size with size field rather than sizeof (TPMU_ENCRYPTED_SECRET) ---//
 // Table 174 - TPM2B_ENCRYPTED_SECRET Structure
 typedef struct {
   UINT16    size;
@@ -1590,6 +1614,7 @@ typedef struct {
 // Table 175 - TPMI_ALG_PUBLIC Type
 typedef TPM_ALG_ID TPMI_ALG_PUBLIC;
 
+//--- Add selector for TPMU_PUBLIC_ID union ---//
 // Table 176 - TPMU_PUBLIC_ID Union
  typedef union(int selector) {
    if (selector == TPM_ALG_KEYEDHASH){
@@ -1630,6 +1655,7 @@ typedef struct {
   TPMT_KDF_SCHEME        kdf;
 } TPMS_ECC_PARMS;
 
+//--- Add selector for TPMU_PUBLIC_PARMS union ---//
 // Table 181 - TPMU_PUBLIC_PARMS Union
   typedef union(int selector) {
    if (selector == TPM_ALG_KEYEDHASH){
@@ -1645,12 +1671,14 @@ typedef struct {
    }
  } TPMU_PUBLIC_PARMS;
 
+//--- Use type as selector for TPMU_PUBLIC_PARMS union ---//
 // Table 182 - TPMT_PUBLIC_PARMS Structure
 typedef struct {
   TPMI_ALG_PUBLIC      type;
   TPMU_PUBLIC_PARMS    parameters(type);
 } TPMT_PUBLIC_PARMS;
 
+//--- Use type as selector for both TPMU_PUBLIC_PARMS and TPMU_PUBLIC_ID unions ---//
 // Table 183 - TPMT_PUBLIC Structure
  typedef struct {
    TPMI_ALG_PUBLIC      type;
@@ -1673,6 +1701,7 @@ typedef struct {
   BYTE      buffer[PRIVATE_VENDOR_SPECIFIC_BYTES];
 } TPM2B_PRIVATE_VENDOR_SPECIFIC;
 
+//--- Add selector for TPMU_SENSITIVE_COMPOSITE union ---//
 // Table 186 - TPMU_SENSITIVE_COMPOSITE Union
 typedef union(TPMI_ALG_PUBLIC type) {
   if (type == TPM_ALG_RSA){
@@ -1688,6 +1717,7 @@ typedef union(TPMI_ALG_PUBLIC type) {
   };
 } TPMU_SENSITIVE_COMPOSITE;
 
+//--- Use sensitiveType as selector for TPMU_SENSITIVE_COMPOSITE union ---//
 // Table 187 - TPMT_SENSITIVE Structure
 typedef struct {
   TPMI_ALG_PUBLIC             sensitiveType;
@@ -1702,6 +1732,8 @@ typedef struct {
   TPMT_SENSITIVE    sensitiveArea;
 } TPM2B_SENSITIVE;
 
+//--- Add size input to _PRIVATE to calculate size of sensitive/encryptedSensitive ---//
+//--- Replacing the direct instantitation of sensitive/encryptedSensitive a TPMT_SENSITIVE structure ---//
 // Table 189 - _PRIVATE Structure
 typedef struct (int size) {
   TPM2B_DIGEST      integrityOuter;
@@ -1710,6 +1742,7 @@ typedef struct (int size) {
   byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4];
 } _PRIVATE;
 
+//--- Retype buffer as _PRIVATE strucuture, passing size for the above calcuations ---//
 // Table 190 - TPM2B_PRIVATE Structure
 typedef struct {
   UINT16    size;
@@ -1722,6 +1755,7 @@ typedef struct {
   TPM2B_DIGEST    encIdentity;
 } _ID_OBJECT;
 
+//--- Retype credential as _ID_OBJECT strucuture ---//
 // Table 192 - TPM2B_ID_OBJECT Structure
 typedef struct {
   UINT16    size;
@@ -1787,6 +1821,7 @@ typedef struct {
 
 // 14 Context Data
 
+//--- Calculate buffer size using size field rather than MAX_CONTEXT_SIZE ---//
 // Table 198 - TPM2B_CONTEXT_SENSITIVE Structure
 typedef struct {
   UINT16    size;
@@ -1799,6 +1834,7 @@ typedef struct {
   TPM2B_CONTEXT_SENSITIVE    encrypted;
 } TPMS_CONTEXT_DATA;
 
+//--- Retype buffer as TPMS_CONTEXT_DATA strucuture ---//
 // Table 200 - TPM2B_CONTEXT_DATA Structure
 typedef struct {
   UINT16    size;
@@ -1847,6 +1883,7 @@ typedef struct {
   TPM_RC    responseCode;
 } TPM2_RESPONSE_HEADER;
 
+//--- Remove #pragma pack () ---//
 
 //
 // TCG Algorithm Registry

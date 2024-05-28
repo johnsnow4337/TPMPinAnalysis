@@ -202,60 +202,83 @@ FAT_BOOTSECTOR header;
 
 
 //---------------------------------------
-//---TPM20.h from:
-//---https://github.com/tianocore/edk2/tree/master/MdePkg/Include/IndustryStandard (Intel, 2015)
-//---With modifications for the 010 editor syntax and operation, including modifying TPM12.h (Intel, 2008)
-//---TPM12.h modifications: remove all pointers ('*'s); remove '#pragma pack's; and add UINT8 definition.
-//---See TPM20.h for modifications denoted by "//---"
+//--- TPM20.h from:
+//--- https://github.com/tianocore/edk2/tree/master/MdePkg/Include/IndustryStandard (Intel, 2015)
+//--- With modifications for the 010 editor syntax and operation, including modifying TPM12.h (Intel, 2008)
+//--- TPM12.h modifications: remove all pointers ('*'s); remove '#pragma pack's; and add UINT8 definition.
+//--- See TPM20.h for modifications denoted by "//---"
 #include <TPM20.h>
 //---------------------------------------//
 
+//---------------------------------------
+//--- Enum converted directly from:
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Utils/constant_names.cpp#L360-L373 (thewhiteninja, 2021)
+//--- And https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/metadata.priv.h#L138-L148 (Coltel and Consultants, 2022)
+//--- Not indepedently verified
+enum<WORD> BITLOCKER_STATE{
+    _NULL = 0x00,
+    DECRYPTED,
+    SWITCHING_ENCRYPTION,
+    EOW_ACTIVATED,
+    ENCRYPTED,
+    SWITCH_ENCRYPTION_PAUSED
+};
+//--------------------------------------//
+
+
+//---------------------------------------
+//--- Bitlocker structure version: 1 for Vista, 2 for Windows 7 and later from:
+//--- https://github.com/libyal/libbde/blob/main/documentation/BitLocker%20Drive%20Encryption%20(BDE)%20format.asciidoc#5-fve-metadata-block (Metz, 2022)
+enum<WORD> BITLOCKER_VERSION{
+    VISTA = 1,
+    WIN_7_PLUS = 2
+};
+//--------------------------------------//
 
 
 //---------------------------------------
 //--- Initial BDE metadata header from https://github.com/libyal/libbde/blob/main/libbde/bde_metadata.h#L90-L152 (Metz, 2022)
-//--- Retyped for the 010 editor template
-struct bde_metadata_block_header_v2
+//--- Retyped for the 010 editor template, unknowns inferred from other references:
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/bitlocker.h#L19-L31 (thewhiteninja, 2021)
+//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/metadata.priv.h#L156-L183 (Coltel and Consultants, 2022)
+struct FVE_METADATA_HEADER 
 {
-	/* The signature
-	 * Consists of 8 bytes
-	 * Contains: -FVE-FS-
-	 */
+    //--- Must be '-FVE-FS-' ---//
 	char signature[ 8 ];
 
-	/* The size
-	 * Consists of 2 bytes
-	 */
+    //---------------------------------------
+    //--- Size of FVE metadata (from above signature) not including validation data ---//
+    //--- According to Coltel and Consultants (2022) this:
+    //--- "has to be multiplied by 16 when the version is 2"
+    //--- This is likely correct
 	short size;
+    //--------------------------------------//
 
-	/* The version
-	 * Consists of 2 bytes
-	 */
-	short version;
+    //---------------------------------------
+    //--- Bitlocker structure version: 1 for Vista, 2 for Windows 7 and later from:
+    //--- https://github.com/libyal/libbde/blob/main/documentation/BitLocker%20Drive%20Encryption%20(BDE)%20format.asciidoc#5-fve-metadata-block (Metz, 2022)
+	BITLOCKER_VERSION version;
+    //--------------------------------------//
 
-	/* Unknown
-	 * Consists of 2 bytes
-	 */
-	short unknown1 <format=hex>;
+    //---Taken from thewhiteninja (2021) and Coltel and Consultants (2022)
+	BITLOCKER_STATE currState <format=hex>;
+	BITLOCKER_STATE nextState <format=hex>;
 
-	/* Unknown
-	 * Consists of 2 bytes
-	 */
-	short unknown2 <format=hex>;
+	//--- Size of the encrypted volume ---//
+	int64 encVolSize <format=hex>;
 
-	/* The encrypted volume size
-	 * Consists of 8 bytes
-	 */
-	int64 encrypted_volume_size;
+    
+    //---------------------------------------
+    //--- From Coltel and Consultants (2022)
+        /*
+        * The following size describes a virtualized region. This region is only
+        * checked when this->curr_state == 2. It begins at the offset described by
+        * this->encrypted_volume_size
+        */
+	int convert_size <format=hex>;
+    //--------------------------------------//
 
-	/* Unknown
-	 * Consists of 4 bytes
-	 */
-	int unknown3 <format=hex>;
-
-	/* The number of volume header sectors
-	 * Consists of 4 bytes
-	 */
+    //--- Likely number of volume sectors, though sources differ on their interpretation --//
 	int number_of_volume_header_sectors;
 
 	/* The first FVE metadata offset
@@ -273,9 +296,7 @@ struct bde_metadata_block_header_v2
 	 */
 	int64 third_metadata_offset <format=hex>;
 
-	/* The volume header offset offset
-	 * Consists of 8 bytes
-	 */
+	//--- Volume header (backup) offset ---//
 	int64 volume_header_offset <format=hex>;
 };
 
@@ -305,8 +326,8 @@ local DatumTypeStruct DatumTypes[MAX_DATUM_TYPES] = {
 //---FveDatumUpdateTypeProp, 10              {2Ch,true},    
 //---FveDatumErrorTypeProp, 11               {34h,0},   
 
-//---According to https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L269
-//---The below datums were added with Windows 7  (Coltel and Consultants, 2022)
+//--- According to https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L269 (Coltel and Consultants, 2022)
+//--- The below datums were added with Windows 7  
 //---FveDatumAsymEncTypeProp, 12             {08h,0},
 //---FveDatumExportedKeyTypeProp, 13         {08h,0},
 //---FveDatumPublicKeyInfoTypeProp, 14,      {08h,0},
@@ -358,36 +379,38 @@ enum<WORD> DATUM_TYPES{
 //--- https://github.com/mbroz/cryptsetup/blob/main/lib/bitlk/bitlk.h#L57-L65 (Trefny, Broz and Hat, 2024)
 //--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28 (thewhiteninja, 2021)
 //--- https://github.com/libyal/libbde/blob/main/libbde/libbde_definitions.h.in#L88-L100 (Metz, 2022)
-//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L78-L93 (Coltel and Consultants, 2022;)
+//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L78-L93 (Coltel and Consultants, 2022)
 
 //--- TPM + PIN specific roles are validated independently (denoted with //*//)
 enum<WORD> ROLE_TYPES{
     PROPERTY        = 0x0, //*//
 
     VMK             = 0x2, //*//
-    FVEK            = 0x3, //*//
+    FVEK            = 0x3, 
     VALIDATION      = 0x4,
 
     EXT_KEY         = 0x6,
     DESCRIPTION     = 0x7, //*//
 
-    //---AKA AUTO_UNLOCK in thewhiteninja (2021)---//
-    FVEK_BAK        = 0xb,
+    FVEK_BAK        = 0xb, //--- AKA AUTO_UNLOCK in thewhiteninja (2021) ---//
 
-    VOL_HEAD        = 0xf, //*//
+    VOL_HEAD        = 0xf,
 
     //---Exclusively listed in Trefny, Broz and Hat (2024)---//
     VOL_GUID        = 0x19
 };
 //-----------------------------------------------//
 
-
-enum<ushort> cipher_types
+//-----------------------------------------------------------------
+//--- Adapted from https://github.com/Aorimn/dislocker/blob/master/include/dislocker/encryption/encommon.h#L31-L50 (Coltel and Consultants, 2022)
+//--- Cross-referencing using:
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Utils/constant_names.cpp#L375-L406 (thewhiteninja, 2021)
+enum<ushort> ENC_TYPES
 {
-    //---------------------------------------
-    //---These Encryption types from:
-    //---FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
-    //---in fveapi.dll (function names from fveapi.pdb)---//
+    //--------------------------------------------------
+    //--- These Encryption types verified from RE of functions:
+    //--- FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
+    //--- in fveapi.dll (function names from fveapi.pdb)---//
 	STRETCH_RECOVERY_PASSWORD   = 0x1000,
     STRETCH_KEY_1   = 0x1001,
 
@@ -397,48 +420,74 @@ enum<ushort> cipher_types
 	AES_CCM_256_VMK           = 0x2003,
 	AES_CCM_256_PIN = 0x2004,
     
-    //---From FveDatumPerformConcatHash
+    //--- From FveDatumPerformConcatHash ---//
 	AES_CCM_256_CONCAT_HASH      = 0x2005,
+
 	AES_CCM_256_PUBLIC_KEY      = 0x2006,
 	AES_CCM_256_PASSPHRASE     = 0x2007,
     AES_CCM_256_REOCVERY_PASSWORD = 0x2008,
-    //---------------------------------------//
+    //-------------------------------------------------//
     
-	AES_128_DIFFUSER    = 0x8000,
-	AES_256_DIFFUSER    = 0x8001,
-	AES_128_NO_DIFFUSER = 0x8002,
-	AES_256_NO_DIFFUSER = 0x8003,
-	AES_XTS_128         = 0x8004,
-	AES_XTS_256         = 0x8005,
+    //-------------------
+    //--- Inferred from below reverse engineering and Coltel and Consultants (2022)
+	AES_128_WITH_DIFFUSER    = 0x8000,
+	AES_256_WITH_DIFFUSER    = 0x8001,
+    //------------------//
 
+    //-------------------
+    //--- Confirmed using GetEncryptionMethod in Win32_EncryptableVolume (Microsoft, 2021a)
+    //--- And CFveApiBase::MapFveMethodToFvekType from fveapi.dll
+	AES_128 = 0x8002,
+	AES_256 = 0x8003,
+	XTS_AES_128         = 0x8004,
+	XTS_AES_256         = 0x8005,
+    //------------------//
+
+    //--- Directly from Coltel and Consultants (2022) (not confirmed) ---//
 	DIS_CIPHER_LOWEST_SUPPORTED  = 0x8000,
 	DIS_CIPHER_HIGHEST_SUPPORTED = 0x8005,
 };
+//----------------------------------------------------------------//
 
-// Structures we want.
-// BitLocker metadata header. (BitLocker Drive Encryption (BDE) format.asciidoc 5.2)
+
+//-----------------------------------------------------------------
+//--- From https://github.com/Wack0/CVE-2022-21894/blob/main/tools/FveAddMetadataForPolicy.c (’Wack0’, 2023)
+//--- The name FVE Dataset is corroborated with symbols present in fveapi.pdb
 struct _FVE_DATASET
 {
-  unsigned int DataSetSize;
+  unsigned int DataSetSize <format=hex>;
   unsigned int DataSetVersion;
   unsigned int DataSetStart;
   unsigned int DataSetEnd;
   GUID FveIdentification;
   unsigned int NonceCounter;
-  cipher_types FvekType <format=hex>;
-  cipher_types FvekPrefType <format=hex>;
+  //-----------------
+  //--- Changed from unsigned __int16 to ENC_TYPES
+  ENC_TYPES FvekType <format=hex>;
+  ENC_TYPES FvekPrefType <format=hex>;
+  //----------------//
   FILETIME DateTime;
 };
 
-// BitLocker metadata entry header. (BitLocker Drive Encryption (BDE) format.asciidoc 5.3)
+//--- The name FVE Datum is corroborated with symbols present in fveapi.pdb
 struct  _FVE_DATUM
 {
   WORD StructureSize;
+  
+  //-----------------
+  //--- Changed from WORD to ROLE_TYPES and DATUM_TYPES
   ROLE_TYPES Role;
   DATUM_TYPES Type;
+  //----------------//
+
   WORD Flags;
 };
+//---------------------------------------------------------------//
 
+
+//-----------------
+//--- Directly from https://github.com/Aorimn/dislocker/blob/845e20c76147b12f52be531b34242922a0661771/include/dislocker/metadata/extended_info.h#L36 (Coltel and Consultants, 2022)
+//--- Out of scope of independent analysis
 typedef struct _extended_info {
 	uint16 unknown1;
 	uint16 size;
@@ -449,26 +498,27 @@ typedef struct _extended_info {
 	uint32 sector_size1;
 	uint32 sector_size2;
 } extended_info_t;
+//----------------//
 
+//--- Reverse engineered from fveapi.dll functions:
+//--- VMKInfoCreate; FvepVmkInfoAddExternallyManagedKey
+//--- FvepVmkInfoAddTpmEnhancedAuthData; FvepVmkInfoAddPublicKey;
+//--- FvepVmkInfoAddPin; CFveApiBase::WorksetHasClearKey
+//--- And calls to CFveApiBase::FindKeyPriorityRangeWithDeleteOption
 struct PROTECTOR_TYPES{
-byte    RESERVED;    
-byte    TPM : 1;
-byte    EXTERNAL_KEY : 1;
-byte    PIN : 1  ;
-byte    RECOVERY_PASSWORD   : 1;
-byte    UKNOWN  :   1;
-byte    PASSPHRASE  :   1;
+byte    UKNOWN_0;   //--- Possibly protectors introduced in post Windows 10 versions will be placed here ---//
+byte    TPM             :   1;
+byte    EXTERNAL_KEY    :   1;
+byte    PIN             :   1;
+byte    RECOVERY_PASSWD :   1;
+byte    PUBLIC_KEY      :   1;
+byte    PASSPHRASE      :   1;
+byte    EXTERNLY_MGD    :   1; //--- Unknown what protector from Win32_EncryptableVolume::GetKeyProtectorType this refers to
+byte    UKNOWN_1        :   1;    
+//--- A protector type of 0x0000 likely represents a clear key
 };
-/*
-typedef struct _datum_aes_ccm
-{
-	datum_header_safe_t header;
-	uint8_t nonce[12];
-	uint8_t mac[16];
-} datum_aes_ccm_t;
-*/
 
-
+//--- Produces readable output in 010 editor ---//
 string READ_PROTECTOR_TYPE(PROTECTOR_TYPES &flag){
     local string RetStr = "";
     if (flag.TPM){
@@ -485,8 +535,14 @@ string READ_PROTECTOR_TYPE(PROTECTOR_TYPES &flag){
             RetStr +=" + USB";
             }
         }
-    if (flag.RECOVERY_PASSWORD){
+    if (flag.RECOVERY_PASSWD){
         RetStr+="Recovery Password";
+    }
+    if (flag.PUBLIC_KEY){
+        RetStr+="Public Key";
+    }
+    if (flag.EXTERNLY_MGD){
+        RetStr+="Externally Managed";
     }
     if (flag.PASSPHRASE){
         RetStr+="PassPhrase";
@@ -506,6 +562,7 @@ enum<WORD> KEY_FLAGS{
 
 //---Forward declaration
 struct PCR_BITMAP;
+//--- Procduces readable output of PCRs used ---//
 string readPCR_BITMAP(PCR_BITMAP &pcrs){
     local string out = "PCRs: ";
     if (pcrs.PCR_0){
@@ -584,7 +641,7 @@ string readPCR_BITMAP(PCR_BITMAP &pcrs){
     return out;
     };
 
-    
+//--- PCR bitmap from TPM 2.0 Part 2 Page 110 (TCG, 2024b:110) ---//
 typedef struct{
     short PCR_0 : 1;
     short PCR_1 : 1;
@@ -611,7 +668,42 @@ typedef struct{
     byte PCR_22 : 1;
     byte PCR_23 : 1;
     }  PCR_BITMAP  <read = readPCR_BITMAP>;
-    
+
+struct TPM2B_AUTH_DUMMY{
+    UINT16    authValue_size;
+    //---------------------------------------
+    //--- "When the TPM returns a TPM2B_PRIVATE structure, the TPM pads the TPM2B_AUTH to its maximum size."
+    //--- The maximum size of the structure is denoted by outPublic.publicArea.nameAlg
+    //---TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+    //--- Bitlocker's nameAlg is TPM_ALG_SHA256 (11)
+    //--- Therefore the authValue size will be 256 bits or 32 bytes
+    //---------------------------------------//
+    BYTE      authValue_buffer[32];
+}
+
+struct TPM2B_DIGEST_DUMMY{
+    UINT16    seedValue_size;
+    //---------------------------------------
+    //---Size taken from outPublic.publicArea.nameAlg
+    //---TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+    //--- Bitlocker's nameAlg is TPM_ALG_SHA256 (11)
+    //--- Therefore the authValue size will be 256 bits or 32 bytes
+    //---------------------------------------//
+    BYTE      seedValue_buffer[32];
+}
+
+
+
+struct TPMT_SENSITIVE_DUMMY{
+  TPMI_ALG_PUBLIC             sensitiveType;
+  TPM2B_AUTH_DUMMY            authValue;
+  TPM2B_DIGEST_DUMMY          seedValue;
+  TPMU_SENSITIVE_COMPOSITE_DUMMY    sensitive;
+};
+
+//---------------------------------------
+//--- This strucutre is created to map the structure of the encrypted data to the decrypted TPM2B_SENSITIVE structure
+//--- This allows us to approximate the size of the user input data
 struct SENSITIVE_DUMMY (uint outPrivate_size) {
     //--- Dummy TPM2B_SENSITIVE structure to work out size of encrypted data ---//
     UINT16            sensitive_size;
@@ -624,17 +716,8 @@ struct SENSITIVE_DUMMY (uint outPrivate_size) {
         //---------------------------------------//
         TPMI_ALG_PUBLIC             sensitiveType;
         
-        // TPM2B_AUTH        authValue;
-            UINT16    authValue_size;
-            BYTE      authValue_buffer[32]; /*Guessed authValue size*/
-        
         // TPM2B_DIGEST      seedValue;
-            UINT16    seedValue_size;
-            //---------------------------------------
-            //---Size taken from outPublic.publicArea.nameAlg
-            //---TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
-            //---------------------------------------//
-            BYTE      seedValue_buffer[32];
+
 
         // TPMU_SENSITIVE_COMPOSITE sensitive(sensitiveType):
         // TPM2B_SENSITIVE_DATA   bits:
@@ -655,7 +738,7 @@ struct SENSITIVE_DUMMY (uint outPrivate_size) {
                     DATUM_TYPES Type;   // 0x0010 //---Most likely fixed---//
                     WORD Flags;         // 0x0000
                 
-                cipher_types KeyType; //---AES_CCM_256_VMK---//
+                ENC_TYPES KeyType; //---AES_CCM_256_VMK---//
                 KEY_FLAGS KeyFlags;   //---0x0000---//
                 BYTE VMK[32];
                 BigEndian();
@@ -677,7 +760,7 @@ struct SENSITIVE_DUMMY (uint outPrivate_size) {
                         DATUM_TYPES Type;   // 0x0010 //---Most likely fixed---//
                         WORD Flags;
                     
-                    cipher_types KeyType; 
+                    ENC_TYPES KeyType; 
                     KEY_FLAGS KeyFlags;
                     BYTE IK[32]; //Stored intermediate key not VMK
                 BigEndian();
@@ -705,7 +788,7 @@ struct _FVE_DATUM_TEMP
     byte DatumData[h.StructureSize-8];
     }
   else if (h.Type == FveDatumKeyTypeProp){
-    cipher_types KeyType;
+    ENC_TYPES KeyType;
     KEY_FLAGS KeyFlags; // bit 0 internally used as "derived from TPM, ensure secureboot policy flag bit2 is set", but not ever set elsewhere...
     byte KeyData[h.StructureSize-12];
     }
@@ -716,7 +799,7 @@ struct _FVE_DATUM_TEMP
      /* The encryption method
 	 * Consists of 4 bytes
 	 */
-	cipher_types encryption_method <format = hex>;
+	ENC_TYPES encryption_method <format = hex>;
     
     /* Likely represents keyFlags suggested by
     *  FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
@@ -797,7 +880,7 @@ int GetNoOfDatums(uint size){
 }
 
 struct FveHeaderBlock(int currOffset){
-    bde_metadata_block_header_v2 FVEBlockHeader;
+    FVE_METADATA_HEADER FVEBlockHeader;
     _FVE_DATASET FVEDataset;
     local int Datums = GetNoOfDatums(FVEDataset.DataSetSize - FVEDataset.DataSetStart);
     _FVE_DATUM_TEMP DATUMS[Datums] <read = READ_DATUM_TYPE, optimize=false>;

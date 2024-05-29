@@ -1,0 +1,383 @@
+[2]2124.1BC4::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B303400.
+[2]2124.1BC4::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B302C80.
+[2]2124.1BC4::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B302D20.
+[1]0004.0110::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B303400.
+[1]0004.0110::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B302C80.
+[1]0004.0110::05/16/2024-01:52:55.349 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.349 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17A: 
+	0000  80010000 00160000 017A0000 00060000  .........z......
+	0010  02000000 0001                        ......
+	
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17A: 
+	0000  80010000 001B0000 00000100 00000600  ................
+	0010  00000100 00020000 000404             ...........
+	
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] TPMCMDHEXDUMP rm20-resourcemgr.cpp(3461) ?GetCachedResponse@Tpm20ResourceMgr@@AEAAHPEAXI0PEAI@Z:Sending TPM command 0x173: 
+	0000  80010000 000E0000 01738100 0001      .........s....
+	
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] TPMCMDHEXDUMP rm20-resourcemgr.cpp(3465) ?GetCachedResponse@Tpm20ResourceMgr@@AEAAHPEAXI0PEAI@Z:Retrieved cached response for 0x173: 
+	0000  80010000 016E0000 0000011A 0001000B  .....n..........
+	0010  00030472 00000006 00800043 00100800  ...r.......C....
+	0020  00000000 0100BBF4 1C9E0046 03B2694C  ...........F..iL
+	0030  1C965D16 BA3B5CA1 9B8D4D62 2E6CDA4E  ..]..;\...Mb.l.N
+	0040  BCEFA2EC 7EE17E0E FA2E79A6 0F2F129A  ....~.~...y../..
+	0050  9C691F4E 995E0B1B D58AF431 2896C8F1  .i.N.^.....1(...
+	0060  13A4C923 EAD5C22F DCAB10D4 CA9DBC10  ...#.../........
+	0070  75EBDB37 532609B6 FA716BE7 36ADF7AA  u..7S&...qk.6...
+	0080  D50CBC77 B1129B88 F28FCADD 8D54EF8C  ...w.........T..
+	0090  A144A976 30843227 4AA21239 1654C515  .D.v0.2'J..9.T..
+	00A0  51A210E6 D0077A62 7C758F1E 00F6EAD2  Q.....zb|u......
+	00B0  B09682E4 CB81CC0F F1312F22 52A96F25  .........1/"R.o%
+	00C0  C879AE6A 2A71EFF3 AFE26FA0 1DD441F6  .y.j*q....o...A.
+	00D0  7F5263BD A9AFFCD3 F148FFFA 358AC00D  .Rc......H..5...
+	00E0  D430BB76 E281BAE5 87007D58 6798F806  .0.v......}Xg...
+	00F0  79FAED96 2419A4D1 CFE45360 6F1C2B58  y...$.....S`o.+X
+	0100  EADCD22D ADD4E8E3 E8E7E3C0 751A4F36  ...-........u.O6
+	0110  3CF341F5 C587F1AF 8EDAC7E0 5E066ABA  <.A.........^.j.
+	0120  A582B79A 31830022 000B1342 D0DECBFD  ....1.."...B....
+	0130  3847E931 45E00510 ABE71F1F 8DF7622E  8G.1E.........b.
+	0140  20D2CE26 A5AB2194 500F0022 000B5D63   ..&..!.P.."..]c
+	0150  439FB711 9B6083E6 97E4D35E 7994352E  C....`.....^y.5.
+	0160  1CE6F326 61E55C46 1B790034 9614      ...&a.\F.y.4..
+	
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.350 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x176: 
+	0000  80010000 003B0000 01764000 00074000  .....;...v@...@.
+	0010  00070020 C8E73EE5 64B0A3F1 64DF054D  ... ..>.d...d..M
+	0020  3BCC1A52 D3E46626 3F0CB804 9D92B130  ;..R..f&?......0
+	0030  31E478F4 00000000 10000B             1.x........
+	
+[1]0004.0110::05/16/2024-01:52:55.351 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x176: 
+	0000  80010000 00300000 00000200 00000020  .....0......... 
+	0010  E2300B62 1F6B160C A5E50C32 FC0E2A4B  .0.b.k.....2..*K
+	0020  3973AE86 373734EA 38A78392 492D7437  9s..774.8...I-t7
+	
+[1]0004.0110::05/16/2024-01:52:55.351 [drv] INFORMATION rm20-resourcemgr.cpp(1422) ?ActivateResource@Tpm20ResourceMgr@@AEAAJPEAVTpm20Context@@PEAVTpm20Resource@@T_TPM20_HANDLE@@@Z:Context FFFFAB8F8B302D20: new resource phys 0x02000000-> virt 0x02000000
+[1]0004.0110::05/16/2024-01:52:55.351 [drv] INFORMATION rm20-resourcemgr.cpp(2364) ?ReplaceOutputHandle@Tpm20ResourceMgr@@AEAAJ_NPEAVTpmBufferAccessor@@PEBVTpm20Request@@@Z:Context FFFFAB8F8B302D20: translate output handle from 0x02000000 to virt 0x02000000.
+[1]0004.0110::05/16/2024-01:52:55.351 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.351 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x153: 
+	0000  80020000 008F0000 01538100 00010000  .........S......
+	0010  0049AAAA AAAAAAAA AAAAAAAA AAAAAAAA  .I..............
+	0020  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0030  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0040  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0050  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0060  AAAAAAAA AA002200 08000400 00045200  ......".......R.
+	0070  00001000 14000000 00000000 00000000  ................
+	0080  00000000 00000000 00000000 000000    ...............
+	
+[1]0004.0110::05/16/2024-01:52:55.354 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x153: 
+	0000  80020000 01AA0000 00000000 0157006A  .............W.j
+	0010  0020553E 22038B0E C0965802 E13249A7  . U>".....X..2I.
+	0020  BD8B543C 224DF642 575A6C74 152484B5  ..T<"M.BWZlt.$..
+	0030  1FD50010 F6BA7637 EB9C1786 32C623BC  ......v7....2.#.
+	0040  C4320CDC 1C40F48C BD397A95 74303ED3  .2...@...9z.t0>.
+	0050  D84ED06D 02C38CBB DC2B8164 C5B4393B  .N.m.....+.d..9;
+	0060  778F31FE 0513DE57 D58DF3CB A1B1664E  w.1....W......fN
+	0070  3433B4BA A1C0CE35 F74A0022 00080004  43.....5.J."....
+	0080  00000452 00000010 00145008 DCB7AA0C  ...R......P.....
+	0090  9550302C 887756E8 C900F366 681F0067  .P0,.wV....fh..g
+	00A0  00000000 0014DA39 A3EE5E6B 4B0D3255  .......9..^kK.2U
+	00B0  BFEF9560 1890AFD8 07090100 0B002200  ...`..........".
+	00C0  0B1342D0 DECBFD38 47E93145 E00510AB  ..B....8G.1E....
+	00D0  E71F1F8D F7622E20 D2CE26A5 AB219450  .....b. ..&..!.P
+	00E0  0F002200 0B5D6343 9FB7119B 6083E697  .."..]cC....`...
+	00F0  E4D35E79 94352E1C E6F32661 E55C461B  ..^y.5....&a.\F.
+	0100  79003496 14000000 14EFD1B8 FCBF6CAB  y.4...........l.
+	0110  ECF0698A 37F57862 2B90BCB3 04802140  ..i.7.xb+.....!@
+	0120  00000100 40481E7B 08D2983B A0CD0BC1  ....@H.{...;....
+	0130  EDC68288 EC8E4420 D447D371 28EAF9DD  ......D .G.q(...
+	0140  F805FC56 268D16EF 69382674 8AD48943  ...V&...i8&t...C
+	0150  5A9C4912 5872E901 480C5B8B 866F383B  Z.I.Xr..H.[..o8;
+	0160  DFA8E41F 2A002023 AF9C61AB 3130F086  ....*. #..a.10..
+	0170  CA59BE42 7E56F820 53D78071 EBB9054F  .Y.B~V. S..q...O
+	0180  17FCA498 78A2CE00 00206E2A C076BED4  ....x.... n*.v..
+	0190  609F5C59 D42AC572 EBB0B813 96A30ECB  `.\Y.*.r........
+	01A0  E9A205B6 FD54F1EE A477               .....T...w
+	
+[1]0004.0110::05/16/2024-01:52:55.354 [drv] INFORMATION rm20-resourcemgr.cpp(3279) ?RemovedLoadedResource@Tpm20ResourceMgr@@AEAAXPEBVTpm20Context@@PEAVTpm20Resource@@@Z:Context FFFFAB8F8B302D20: deleted virt resource 0x02000000.
+[1]0004.0110::05/16/2024-01:52:55.354 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.354 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03010000                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.355 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03010000 00000001 00205CD3  ............. \.
+	0020  ACFCBBCB 620E9985 4E647E6F D50926D2  ....b...Nd~o..&.
+	0030  A464FDBC 5EF1775E 15B15356 25A4      .d..^.w^..SV%.
+	
+[1]0004.0110::05/16/2024-01:52:55.355 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.355 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03020000                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.356 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03020000 00000001 002028B4  ............. (.
+	0020  5E4A463A 55C2E2A3 87E2D43C F26E9C60  ^JF:U......<.n.`
+	0030  BEA1E120 BA367DEB BFF13290 C24D      ... .6}...2..M
+	
+[1]0004.0110::05/16/2024-01:52:55.356 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.356 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03040000                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.357 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03040000 00000001 00203D45  ............. =E
+	0020  8CFE55CC 03EA1F44 3F1562BE EC8DF51C  ..U....D?.b.....
+	0030  75E14A9F CF9A7234 A13F198E 7969      u.J...r4.?..yi
+	
+[1]0004.0110::05/16/2024-01:52:55.357 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.357 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03080000                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.358 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03080000 00000001 00203D45  ............. =E
+	0020  8CFE55CC 03EA1F44 3F1562BE EC8DF51C  ..U....D?.b.....
+	0030  75E14A9F CF9A7234 A13F198E 7969      u.J...r4.?..yi
+	
+[1]0004.0110::05/16/2024-01:52:55.358 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.358 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03100000                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.358 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03100000 00000001 0020A454  ............. .T
+	0020  3FDFEE05 22C1FBBB 83A1C494 167E81E3  ?..."........~..
+	0030  824213CE E944DAEB 2B98B2DF 725A      .B...D..+...rZ
+	
+[1]0004.0110::05/16/2024-01:52:55.359 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.359 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03200000                             . ..
+	
+[1]0004.0110::05/16/2024-01:52:55.359 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03200000 00000001 0020A77D  ..... ....... .}
+	0020  BB274BB3 5BFFF02D 0A05BCE4 28335E95  .'K.[..-....(3^.
+	0030  AEB8D765 EFE47BF1 F1E2858A FD77      ...e..{......w
+	
+[1]0004.0110::05/16/2024-01:52:55.359 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[1]0004.0110::05/16/2024-01:52:55.359 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03000800                             ....
+	
+[1]0004.0110::05/16/2024-01:52:55.360 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03000800 00000001 00200FE6  ............. ..
+	0020  E8F2110D 5D53935C 9E7D6F6B F722598B  ....]S.\.}ok."Y.
+	0030  550595AA BDC6E4FD 2ECDF310 F980      U.............
+	
+[1]0004.0110::05/16/2024-01:52:55.360 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B302D20.
+[2]2124.1BC4::05/16/2024-01:52:55.374 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B302E10.
+[2]2124.1BC4::05/16/2024-01:52:55.374 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B302C80.
+[3]0004.0110::05/16/2024-01:52:55.374 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B302E10.
+[3]0004.0110::05/16/2024-01:52:55.662 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.662 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17A: 
+	0000  80010000 00160000 017A0000 00060000  .........z......
+	0010  02000000 0001                        ......
+	
+[3]0004.0110::05/16/2024-01:52:55.662 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17A: 
+	0000  80010000 001B0000 00000100 00000600  ................
+	0010  00000100 00020000 000404             ...........
+	
+[3]0004.0110::05/16/2024-01:52:55.685 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.685 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03800000                             ....
+	
+[3]0004.0110::05/16/2024-01:52:55.686 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03800000 00000001 00204BF3  ............. K.
+	0020  7BA2B91C 0AAE6104 AF602CE2 088E2956  {.....a..`,...)V
+	0030  40CE3CED 2EAD8C60 3CC9304F 72C9      @.<....`<.0Or.
+	
+[3]0004.0110::05/16/2024-01:52:55.692 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.692 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03800000                             ....
+	
+[3]0004.0110::05/16/2024-01:52:55.693 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03800000 00000001 00204BF3  ............. K.
+	0020  7BA2B91C 0AAE6104 AF602CE2 088E2956  {.....a..`,...)V
+	0030  40CE3CED 2EAD8C60 3CC9304F 72C9      @.<....`<.0Or.
+	
+[3]0004.0110::05/16/2024-01:52:55.693 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.693 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x176: 
+	0000  80010000 003B0000 01764000 00074000  .....;...v@...@.
+	0010  00070020 00000000 00000000 00000000  ... ............
+	0020  00000000 00000000 00000000 00000000  ................
+	0030  00000000 00000300 10000B             ...........
+	
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x176: 
+	0000  80010000 00300000 00000300 00000020  .....0......... 
+	0010  38DC62CB 88F7A1B2 CCEAD6F4 AF0382BC  8.b.............
+	0020  A7436657 A79BA5D3 026C74F1 F5AA1034  .CfW.....lt....4
+	
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] INFORMATION rm20-resourcemgr.cpp(1422) ?ActivateResource@Tpm20ResourceMgr@@AEAAJPEAVTpm20Context@@PEAVTpm20Resource@@T_TPM20_HANDLE@@@Z:Context FFFFAB8F8B302C80: new resource phys 0x03000000-> virt 0x03000000
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] INFORMATION rm20-resourcemgr.cpp(2364) ?ReplaceOutputHandle@Tpm20ResourceMgr@@AEAAJ_NPEAVTpmBufferAccessor@@PEBVTpm20Request@@@Z:Context FFFFAB8F8B302C80: translate output handle from 0x03000000 to virt 0x03000000.
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] INFORMATION rm20-resourcemgr.cpp(1531) ?ReplaceInputHandles@Tpm20ResourceMgr@@AEAAXPEAVTpm20Request@@@Z:Context FFFFAB8F8B302C80: translate handle-nr 0 from 0x03000000 to 0x03000000.
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.694 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x16B: 
+	0000  80010000 000E0000 016B0300 0000      .........k....
+	
+[3]0004.0110::05/16/2024-01:52:55.695 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x16B: 
+	0000  80010000 000A0000 0000               ..........
+	
+[3]0004.0110::05/16/2024-01:52:55.695 [drv] INFORMATION rm20-resourcemgr.cpp(1531) ?ReplaceInputHandles@Tpm20ResourceMgr@@AEAAXPEAVTpm20Request@@@Z:Context FFFFAB8F8B302C80: translate handle-nr 0 from 0x03000000 to 0x03000000.
+[3]0004.0110::05/16/2024-01:52:55.695 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.695 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17F: 
+	0000  80010000 003A0000 017F0300 00000020  .....:......... 
+	0010  430A0EC8 FCD7902C 50F5D3EA 88CC9E31  C......,P......1
+	0020  5C7479DA 4A7CB943 69585209 E7145D5F  \ty.J|.CiXR...]_
+	0030  00000001 000B0380 0800               ..........
+	
+[3]0004.0110::05/16/2024-01:52:55.696 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17F: 
+	0000  80010000 000A0000 0000               ..........
+	
+[3]0004.0110::05/16/2024-01:52:55.696 [drv] INFORMATION rm20-resourcemgr.cpp(1531) ?ReplaceInputHandles@Tpm20ResourceMgr@@AEAAXPEAVTpm20Request@@@Z:Context FFFFAB8F8B302C80: translate handle-nr 0 from 0x03000000 to 0x03000000.
+[3]0004.0110::05/16/2024-01:52:55.696 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.696 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x189: 
+	0000  80010000 000E0000 01890300 0000      ..............
+	
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x189: 
+	0000  80010000 002C0000 00000020 0CEF547C  .....,..... ..T|
+	0010  BAE7F543 0E67E874 09383B25 D43F4407  ...C.g.t.8;%.?D.
+	0020  3E86AE7D 4FFA97AA 7075F1F0           >..}O...pu..
+	
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] VERBOSE tpm20-commands.cpp(2854) ?Tpm20CmdFlushContextWorker@@YAJPEAVTpm20Context@@PEAVTpmStack@@PEAVTpmTransport@@T_TPM20_HANDLE@@@Z:Flushing TPM handle 0x03000000
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x165: 
+	0000  80010000 000E0000 01650300 0000      .........e....
+	
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x165: 
+	0000  80010000 000A0000 0000               ..........
+	
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] INFORMATION rm20-resourcemgr.cpp(3279) ?RemovedLoadedResource@Tpm20ResourceMgr@@AEAAXPEBVTpm20Context@@PEAVTpm20Resource@@@Z:Context FFFFAB8F8B302C80: deleted virt resource 0x03000000.
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] TPMCMDHEXDUMP rm20-resourcemgr.cpp(3461) ?GetCachedResponse@Tpm20ResourceMgr@@AEAAHPEAXI0PEAI@Z:Sending TPM command 0x173: 
+	0000  80010000 000E0000 01738100 0001      .........s....
+	
+[3]0004.0110::05/16/2024-01:52:55.697 [drv] TPMCMDHEXDUMP rm20-resourcemgr.cpp(3465) ?GetCachedResponse@Tpm20ResourceMgr@@AEAAHPEAXI0PEAI@Z:Retrieved cached response for 0x173: 
+	0000  80010000 016E0000 0000011A 0001000B  .....n..........
+	0010  00030472 00000006 00800043 00100800  ...r.......C....
+	0020  00000000 0100BBF4 1C9E0046 03B2694C  ...........F..iL
+	0030  1C965D16 BA3B5CA1 9B8D4D62 2E6CDA4E  ..]..;\...Mb.l.N
+	0040  BCEFA2EC 7EE17E0E FA2E79A6 0F2F129A  ....~.~...y../..
+	0050  9C691F4E 995E0B1B D58AF431 2896C8F1  .i.N.^.....1(...
+	0060  13A4C923 EAD5C22F DCAB10D4 CA9DBC10  ...#.../........
+	0070  75EBDB37 532609B6 FA716BE7 36ADF7AA  u..7S&...qk.6...
+	0080  D50CBC77 B1129B88 F28FCADD 8D54EF8C  ...w.........T..
+	0090  A144A976 30843227 4AA21239 1654C515  .D.v0.2'J..9.T..
+	00A0  51A210E6 D0077A62 7C758F1E 00F6EAD2  Q.....zb|u......
+	00B0  B09682E4 CB81CC0F F1312F22 52A96F25  .........1/"R.o%
+	00C0  C879AE6A 2A71EFF3 AFE26FA0 1DD441F6  .y.j*q....o...A.
+	00D0  7F5263BD A9AFFCD3 F148FFFA 358AC00D  .Rc......H..5...
+	00E0  D430BB76 E281BAE5 87007D58 6798F806  .0.v......}Xg...
+	00F0  79FAED96 2419A4D1 CFE45360 6F1C2B58  y...$.....S`o.+X
+	0100  EADCD22D ADD4E8E3 E8E7E3C0 751A4F36  ...-........u.O6
+	0110  3CF341F5 C587F1AF 8EDAC7E0 5E066ABA  <.A.........^.j.
+	0120  A582B79A 31830022 000B1342 D0DECBFD  ....1.."...B....
+	0130  3847E931 45E00510 ABE71F1F 8DF7622E  8G.1E.........b.
+	0140  20D2CE26 A5AB2194 500F0022 000B5D63   ..&..!.P.."..]c
+	0150  439FB711 9B6083E6 97E4D35E 7994352E  C....`.....^y.5.
+	0160  1CE6F326 61E55C46 1B790034 9614      ...&a.\F.y.4..
+	
+[3]0004.0110::05/16/2024-01:52:55.698 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.698 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x176: 
+	0000  80010000 003B0000 01764000 00074000  .....;...v@...@.
+	0010  00070020 8D79AA62 A8B1DB38 0B73125A  ... .y.b...8.s.Z
+	0020  43802345 D28CBABC E9E587E6 CF864F5A  C.#E..........OZ
+	0030  48C43576 00000000 10000B             H.5v.......
+	
+[3]0004.0110::05/16/2024-01:52:55.698 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x176: 
+	0000  80010000 00300000 00000200 00000020  .....0......... 
+	0010  3181B02E 19D4715F 3B9D9A2C 2A5F4784  1.....q_;..,*_G.
+	0020  68A8894D 4B1EFA49 B6F50EB9 DBB486A5  h..MK..I........
+	
+[3]0004.0110::05/16/2024-01:52:55.698 [drv] INFORMATION rm20-resourcemgr.cpp(1422) ?ActivateResource@Tpm20ResourceMgr@@AEAAJPEAVTpm20Context@@PEAVTpm20Resource@@T_TPM20_HANDLE@@@Z:Context FFFFAB8F8B302C80: new resource phys 0x02000000-> virt 0x02000000
+[3]0004.0110::05/16/2024-01:52:55.698 [drv] INFORMATION rm20-resourcemgr.cpp(2364) ?ReplaceOutputHandle@Tpm20ResourceMgr@@AEAAJ_NPEAVTpmBufferAccessor@@PEBVTpm20Request@@@Z:Context FFFFAB8F8B302C80: translate output handle from 0x02000000 to virt 0x02000000.
+[3]0004.0110::05/16/2024-01:52:55.699 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.699 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x153: 
+	0000  80020000 011B0000 01538100 00010000  .........S......
+	0010  0049AAAA AAAAAAAA AAAAAAAA AAAAAAAA  .I..............
+	0020  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0030  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0040  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0050  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0060  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0070  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0080  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	0090  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	00A0  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	00B0  AAAAAAAA AAAAAAAA AAAAAAAA AAAAAAAA  ................
+	00C0  AAAAAAAA AA004E00 08000B00 00001200  ......N.........
+	00D0  200CEF54 7CBAE7F5 430E67E8 7409383B   ..T|...C.g.t.8;
+	00E0  25D43F44 073E86AE 7D4FFA97 AA7075F1  %.?D.>..}O...pu.
+	00F0  F0001000 20000000 00000000 00000000  .... ...........
+	0100  00000000 00000000 00000000 00000000  ................
+	0110  00000000 00000000 000000             ...........
+	
+[3]0004.0110::05/16/2024-01:52:55.701 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x153: 
+	0000  80020000 02520000 00000000 01FF00CE  .....R..........
+	0010  0020F7FA 14D303CD 7818D068 C0A79D5F  . ......x..h..._
+	0020  33C22FBC 4CC42D2D C41B5D75 313D012C  3./.L.--..]u1=.,
+	0030  78570010 F5C1E875 98934B52 E87C7156  xW.....u..KR.|qV
+	0040  CF3B06C4 EE20B38C 59567E97 83435A0B  .;... ..YV~..CZ.
+	0050  D9A428B9 0F140B97 8EC81928 0F544394  ..(........(.TC.
+	0060  19403D08 2C46B5F4 8FCA1047 E3C6EB87  .@=.,F.....G....
+	0070  B154E90D 0A4FC7FF AF91CC8A DF751D0E  .T...O.......u..
+	0080  FA5D10A6 DAE86EE1 1700E393 FBD4AB51  .]....n........Q
+	0090  B057DF02 9711AF67 8FA12283 3A051032  .W.....g..".:..2
+	00A0  18D1C173 A5A637AC B7E578C1 38893E25  ...s..7...x.8.>%
+	00B0  01A6FE32 5F825E83 8920A9B8 1F55281D  ...2_.^.. ...U(.
+	00C0  73918329 AFD047A7 75571D1D AC57B989  s..)..G.uW...W..
+	00D0  688EAC94 FE524660 84A871D2 8BFF004E  h....RF`..q....N
+	00E0  0008000B 00000012 00200CEF 547CBAE7  ......... ..T|..
+	00F0  F5430E67 E8740938 3B25D43F 44073E86  .C.g.t.8;%.?D.>.
+	0100  AE7D4FFA 97AA7075 F1F00010 002025FB  .}O...pu..... %.
+	0110  70574DB1 F788FDE2 7C1E1CDC 2CC348A4  pWM.....|...,.H.
+	0120  9E6BA6FF BBB9CD90 2A5C57C2 92090073  .k......*\W....s
+	0130  00000000 0020E3B0 C44298FC 1C149AFB  ..... ...B......
+	0140  F4C8996F B92427AE 41E4649B 934CA495  ...o.$'.A.d..L..
+	0150  991B7852 B8550100 0B002200 0B1342D0  ..xR.U...."...B.
+	0160  DECBFD38 47E93145 E00510AB E71F1F8D  ...8G.1E........
+	0170  F7622E20 D2CE26A5 AB219450 0F002200  .b. ..&..!.P..".
+	0180  0B5D6343 9FB7119B 6083E697 E4D35E79  .]cC....`.....^y
+	0190  94352E1C E6F32661 E55C461B 79003496  .5....&a.\F.y.4.
+	01A0  14000000 206C00C6 BE590F27 A17FF4B9  .... l...Y.'....
+	01B0  A755B24D 5A66E01F 511CF1AB E3CE003A  .U.MZf..Q......:
+	01C0  47371D2A D5802140 00000100 4076E525  G7.*..!@....@v.%
+	01D0  D3968905 63140B99 AADD7D93 8026278B  ....c.....}..&'.
+	01E0  2F781831 0A7BAC44 14728000 58E2BA45  /x.1.{.D.r..X..E
+	01F0  ABE245EF 0E087F8F 85C6FBF9 E4A79F69  ..E............i
+	0200  2FCE0E61 494516BB 0893B5A4 860020F2  /..aIE........ .
+	0210  6E0034E6 3865AB91 A80A81BE 43D01AA7  n.4.8e......C...
+	0220  B2735F1D B4EB8E97 348F28C2 40144600  .s_.....4.(.@.F.
+	0230  0020AFD0 60677E2A 0FC1022A 07633CC9  . ..`g~*...*.c<.
+	0240  4CDFF7B7 C56BEB53 39C6150E 2E785D6F  L....k.S9....x]o
+	0250  DE73                                 .s
+	
+[3]0004.0110::05/16/2024-01:52:55.701 [drv] INFORMATION rm20-resourcemgr.cpp(3279) ?RemovedLoadedResource@Tpm20ResourceMgr@@AEAAXPEBVTpm20Context@@PEAVTpm20Resource@@@Z:Context FFFFAB8F8B302C80: deleted virt resource 0x02000000.
+[2]2124.1BC4::05/16/2024-01:52:55.704 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B303E00.
+[2]2124.1BC4::05/16/2024-01:52:55.704 [drv] INFORMATION rm20-resourcemgr.cpp(461) ?CreateTpm20Context@Tpm20ResourceMgr@@SAJPEAPEAVTpm20Context@@@Z:Created new context FFFFAB8F8B303680.
+[3]0004.0110::05/16/2024-01:52:55.704 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B303E00.
+[3]0004.0110::05/16/2024-01:52:55.713 [drv] INFORMATION rm20-resourcemgr.cpp(892) ?SubmitRequest@Tpm20ResourceMgr@@QEAAJPEAVTpm20Request@@@Z:Sending TPM command on behalf of \Device\HarddiskVolume4\Windows\System32\wbem\WmiPrvSE.exe
+[3]0004.0110::05/16/2024-01:52:55.713 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1248) TpmTransport::DispatchCommand:Sending TPM command 0x17E: 
+	0000  80010000 00140000 017E0000 0001000B  .........~......
+	0010  03800000                             ....
+	
+[3]0004.0110::05/16/2024-01:52:55.713 [drv] TPMCMDHEXDUMP tpmtransport.cpp(1318) TpmTransport::DispatchCommand:Received TPM response for 0x17E: 
+	0000  80010000 003E0000 00000000 00BF0000  .....>..........
+	0010  0001000B 03800000 00000001 00204BF3  ............. K.
+	0020  7BA2B91C 0AAE6104 AF602CE2 088E2956  {.....a..`,...)V
+	0030  40CE3CED 2EAD8C60 3CC9304F 72C9      @.<....`<.0Or.
+	
+[0]0004.0110::05/16/2024-01:52:55.719 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B303680.
+[0]0004.0110::05/16/2024-01:52:55.719 [drv] INFORMATION rm20-resourcemgr.cpp(509) ?DeleteTpm20Context@Tpm20ResourceMgr@@QEAAXPEAVTpm20Context@@_N@Z:Deleting context FFFFAB8F8B302C80.

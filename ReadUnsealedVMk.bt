@@ -1,0 +1,370 @@
+//------------------------------------------------
+//--- 010 Editor v14.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#include <TPM20.h>
+
+//---------------------------------------
+//---Key Flags suggested by
+//---FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
+//---Supported by testing
+enum<WORD> KEY_FLAGS{
+    EnhancedPin  = 0x4,
+    NonEnhancedPin = 0x10  
+};
+//---------------------------------------//
+
+//---Forward declaration
+struct PCR_BITMAP;
+//--- Procduces readable output of PCRs used ---//
+string readPCR_BITMAP(PCR_BITMAP &pcrs){
+    local string out = "PCRs: ";
+    if (pcrs.PCR_0){
+        out+="0, ";
+        };
+    if (pcrs.PCR_1){
+        out+="1, ";
+    }; 
+    if (pcrs.PCR_2){
+        out+="2, ";
+    }; 
+    if (pcrs.PCR_3){
+        out+="3, ";
+    };
+    if (pcrs.PCR_4){
+        out+="4, ";
+    };
+    if (pcrs.PCR_5){
+        out+="5, ";
+    }; 
+    if (pcrs.PCR_6){
+        out+="6, ";
+    }; 
+    if (pcrs.PCR_7){
+        out+="7, ";
+    }; 
+    if (pcrs.PCR_8){
+        out+="8, ";
+    }; 
+    if (pcrs.PCR_9){
+        out+="9, ";
+    }; 
+    if (pcrs.PCR_10){
+        out+="10, ";
+    }; 
+    if (pcrs.PCR_11){
+        out+="11, ";
+    }; 
+    if (pcrs.PCR_12){
+        out+="12, ";
+    }; 
+    if (pcrs.PCR_13){
+        out+="13, ";
+    }; 
+    if (pcrs.PCR_14){
+        out+="14, ";
+    }; 
+    if (pcrs.PCR_15){
+        out+="15, ";
+    }; 
+    if (pcrs.PCR_16){
+        out+="16, ";
+    }; 
+    if (pcrs.PCR_17){
+        out+="17, ";
+    };
+    if (pcrs.PCR_18){
+        out+="18, ";
+    }; 
+    if (pcrs.PCR_19){
+        out+="19, ";
+    }; 
+    if (pcrs.PCR_20){
+        out+="20, ";
+    }; 
+    if (pcrs.PCR_21){
+        out+="21, ";
+    }; 
+    if (pcrs.PCR_22){
+        out+="22, ";
+    }; 
+    if (pcrs.PCR_23){
+        out+="23, ";
+    }; 
+    out = StrDel(out, Strlen(out)-2, 2);
+    return out;
+    };
+
+//--- PCR bitmap from TPM 2.0 Part 2 Page 110 (TCG, 2024b:110) ---//
+typedef struct{
+    short PCR_0 : 1;
+    short PCR_1 : 1;
+    short PCR_2 : 1;
+    short PCR_3 : 1;
+    short PCR_4 : 1;
+    short PCR_5 : 1;
+    short PCR_6 : 1;
+    short PCR_7 : 1;
+    short PCR_8 : 1;
+    short PCR_9 : 1;
+    short PCR_10 : 1;
+    short PCR_11 : 1;
+    short PCR_12 : 1;
+    short PCR_13 : 1;
+    short PCR_14 : 1;
+    short PCR_15 : 1;
+    byte PCR_16 : 1;
+    byte PCR_17 : 1;
+    byte PCR_18 : 1;
+    byte PCR_19 : 1;
+    byte PCR_20 : 1;
+    byte PCR_21 : 1;
+    byte PCR_22 : 1;
+    byte PCR_23 : 1;
+    }  PCR_BITMAP  <read = readPCR_BITMAP>;
+
+#define VMK_SIZE 32
+#define IK_SIZE  32
+
+//---------------------------------------
+//--- These structures are taken from an fveapi.dll Global at virtual offset: 0x1800bae90 with structure DatumTypes (see above), 
+//--- The datum names are taken from fveapi.pdb with FveDatumSimpleTypePropX enumerated.
+//--- The same DatumTypes structure is found in bootmgfw.efi Global at virtual offset: 0x10013490.
+//--- This Global is referenced in FveDatumHeaderSafe in both executables among other references.
+enum<WORD> DATUM_TYPES{
+    FveDatumErasedTypeProp = 0,
+    FveDatumKeyTypeProp,
+    FveDatumUnicodeTypeProp,
+    FveDatumStretchKeyTypeProp,
+    FveDatumUseKeyTypeProp,
+    FveDatumAesCcmEncTypeProp,
+    FveDatumTpmEncBlobTypeProp,
+    FveDatumValidationInfoTypeProp,
+    FveDatumVmkInfoTypeProp,  
+    FveDatumExternalInfoTypeProp,    
+    FveDatumUpdateTypeProp, 
+    FveDatumErrorTypeProp,   
+    FveDatumAsymEncTypeProp,
+    FveDatumExportedKeyTypeProp,
+    FveDatumPublicKeyInfoTypeProp,
+    FveDatumVirtualizationInfoTypeProp,
+    FveDatumSimpleTypeProp1,
+    FveDatumSimpleTypeProp2,
+    FveDatumConcatHashKeyTypeProp,
+    FveDatumSimpleTypeProp3,
+    FveDatumSimpleLargeTypeProp,
+    FveDatumBackupInfoTypeProp
+};
+//-------------------------------------------//
+
+//-------------------------------------------------
+//--- Enum of Datum 'roles'
+//--- Created from:
+//--- https://github.com/mbroz/cryptsetup/blob/main/lib/bitlk/bitlk.h#L57-L65 (Trefny, Broz and Hat, 2024)
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28 (thewhiteninja, 2021)
+//--- https://github.com/libyal/libbde/blob/main/libbde/libbde_definitions.h.in#L106-L121 (Metz, 2022)
+//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L78-L93 (Coltel and Consultants, 2022)
+
+//--- TPM + PIN specific roles are validated independently (denoted with //*//)
+enum<WORD> ROLE_TYPES{
+    PROPERTY        = 0x0, //*//
+
+    VMK             = 0x2, //*//
+    FVEK            = 0x3, 
+    VALIDATION      = 0x4,
+    
+    //---------------------
+    //--- Inferred from unsealed TPM only VMK ---//
+    //--- https://github.com/PSPReverse/ftpm_attack/tree/master?tab=readme-ov-file#tpm-object-decryption (Jacob et al., 2023b)---//
+    TPM_SEALED      = 0x5, 
+    //--------------------//
+    
+    EXT_KEY         = 0x6,
+    DESCRIPTION     = 0x7, //*//
+
+    FVEK_BAK        = 0xb, //--- AKA AUTO_UNLOCK in thewhiteninja (2021) ---//
+
+    VOL_HEAD        = 0xf,
+
+    //---Exclusively listed in Trefny, Broz and Hat (2024)---//
+    VOL_GUID        = 0x19
+};
+//-----------------------------------------------//
+
+//-----------------------------------------------------------------
+//--- Adapted from https://github.com/Aorimn/dislocker/blob/master/include/dislocker/encryption/encommon.h#L31-L50 (Coltel and Consultants, 2022)
+//--- Cross-referencing using:
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Utils/constant_names.cpp#L375-L406 (thewhiteninja, 2021)
+enum<ushort> ENC_TYPES
+{
+    //--------------------------------------------------
+    //--- These Encryption types verified from RE of functions:
+    //--- FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
+    //--- in fveapi.dll (function names from fveapi.pdb)---//
+	STRETCH_RECOVERY_PASSWORD   = 0x1000,
+    STRETCH_KEY_1   = 0x1001,
+
+	AES_CCM_256_0 = 0x2000,
+	AES_CCM_256_1 = 0x2001,
+	AES_CCM_256_EXTERN_KEY    = 0x2002,
+	AES_CCM_256_VMK           = 0x2003,
+	AES_CCM_256_PIN = 0x2004,
+    
+    //--- From FveDatumPerformConcatHash ---//
+	AES_CCM_256_CONCAT_HASH      = 0x2005,
+
+	AES_CCM_256_PUBLIC_KEY      = 0x2006,
+	AES_CCM_256_PASSPHRASE     = 0x2007,
+    AES_CCM_256_REOCVERY_PASSWORD = 0x2008,
+    //-------------------------------------------------//
+    
+    //-------------------
+    //--- Inferred from below reverse engineering and Coltel and Consultants (2022)
+	AES_128_WITH_DIFFUSER    = 0x8000,
+	AES_256_WITH_DIFFUSER    = 0x8001,
+    //------------------//
+
+    //-------------------
+    //--- Confirmed using GetEncryptionMethod in Win32_EncryptableVolume (Microsoft, 2021a)
+    //--- And CFveApiBase::MapFveMethodToFvekType from fveapi.dll
+	AES_128 = 0x8002,
+	AES_256 = 0x8003,
+	XTS_AES_128         = 0x8004,
+	XTS_AES_256         = 0x8005,
+    //------------------//
+
+    //--- Directly from Coltel and Consultants (2022) (not confirmed) ---//
+	DIS_CIPHER_LOWEST_SUPPORTED  = 0x8000,
+	DIS_CIPHER_HIGHEST_SUPPORTED = 0x8005,
+};
+//----------------------------------------------------------------//
+
+//--- The name FVE Datum is corroborated with symbols present in fveapi.pdb
+struct  _FVE_DATUM
+{
+  WORD StructureSize;
+  
+  //-----------------
+  //--- Changed from WORD to ROLE_TYPES and DATUM_TYPES
+  ROLE_TYPES Role;
+  DATUM_TYPES Type;
+  //----------------//
+
+  WORD Flags;
+};
+//---------------------------------------------------------------//
+struct FVE_DATUM_KEY_DUMMY(char isVMKorIK){
+    _FVE_DATUM h;             //---Example Values
+    //    WORD StructureSize; // 0x002c
+    //    ROLE_TYPES Role;    // 0x0000
+    //    DATUM_TYPES Type;   // 0x0001
+    //    WORD Flags;         // 0x0000
+    
+    ENC_TYPES KeyType; //---AES_CCM_256_VMK---//
+    KEY_FLAGS KeyFlags;   //---0x0000---//
+    if (isVMKorIK == 0){
+        BYTE VMK[VMK_SIZE];
+    }else if (isVMKorIK == 1){
+        BYTE IK[IK_SIZE];
+    };
+};
+
+
+struct FVE_DATUM_AESCCM_ENC_DUMMY  {
+    _FVE_DATUM h;      //---Example Values
+    //    WORD StructureSize; // 0x0050
+    //    ROLE_TYPES Role;    // 0x0000
+    //    DATUM_TYPES Type;   // 0x0005
+    //    WORD Flags;         // 0x0000
+    FILETIME nonceTime;
+    int nonceCounter;
+    byte HMAC[16] <format=hex>;
+
+    //--- Intermediate key AES-CCM Encrypted with stretched PIN ----//
+    FVE_DATUM_KEY_DUMMY EncIKKeyDatum(1);
+};
+
+//---------------------------------------
+//--- Encrypted data dummy structure, including Bitlocker specific structs
+//--- This structure assumes that the encrypted data size is the same as the plaintext data size
+//--- This may not always be the case but appears to be consistent with Bitlocker test data
+struct TPM2B_SENSITIVE_DATA_DUMMY{
+    UINT16    bits_size;
+
+    //--- Expected TPM Only protected VMK ---//
+    if (bits_size == 44){
+        LittleEndian();
+        FVE_DATUM_KEY_DUMMY VMKKeyDatum(0);
+        BigEndian();
+
+    //-- -Expected TPM + PIN protected Intemediate Key ---//
+    }else if (bits_size == 80){
+        LittleEndian();
+        FVE_DATUM_AESCCM_ENC_DUMMY AESCCMEncIK;
+        BigEndian();
+    }else{
+    //--- Non Bitlocker TPM encrypted data ---//
+    BYTE      EncryptedDatums[bits_size];
+    };
+};
+//--------------------------------------//
+
+//--- TPMU_SENSITIVE_COMPOSITE_DUMMY will be a data field in Bitlocker ---//
+typedef TPM2B_SENSITIVE_DATA_DUMMY TPMU_SENSITIVE_COMPOSITE_DUMMY;
+
+//---------------------------------------
+//--- "When the TPM returns a TPM2B_PRIVATE structure, the TPM pads the TPM2B_AUTH to its maximum size."
+//--- The maximum size of the structure is denoted by outPublic.publicArea.nameAlg
+//--- TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+//--- Bitlocker's nameAlg is TPM_ALG_SHA256 (11)
+//--- Therefore the authValue size will be 256 bits or 32 bytes
+struct TPM2B_AUTH_DUMMY{
+    UINT16    authValue_size;
+    BYTE      authValue_buffer[SHA256_DIGEST_SIZE];
+};
+//---------------------------------------//
+
+//---------------------------------------
+//--- Size taken from outPublic.publicArea.nameAlg
+//--- TPM 2.0 Part 1 Page 186 (TCG, 2024a:186)
+//--- Bitlocker's nameAlg is TPM_ALG_SHA256 (11)
+//--- Therefore the authValue size will be 256 bits or 32 bytes
+struct TPM2B_DIGEST_DUMMY{
+    UINT16    seedValue_size;
+    BYTE      seedValue_buffer[SHA256_DIGEST_SIZE];
+};
+//---------------------------------------//
+
+//--- Dummy Structure wrapper ---//
+struct TPMT_SENSITIVE_DUMMY{
+    //---------------------------------------
+    //--- sensitiveType is the same as outPublic.publicArea.Type 
+    //--- TPM 2.0 Part 2 Page 158 (TCG, 2024b:158)
+    TPMI_ALG_PUBLIC                   sensitiveType;
+    //---------------------------------------//
+
+    TPM2B_AUTH_DUMMY                  authValue;
+    TPM2B_DIGEST_DUMMY                seedValue;
+    TPMU_SENSITIVE_COMPOSITE_DUMMY    sensitive;
+};
+
+//---------------------------------------
+//--- This structure is created to map the structure of the encrypted data to the decrypted TPM2B_SENSITIVE structure
+//--- This allows us to approximate the size of the user input data
+struct TPM2B_SENSITIVE_DUMMY{
+    //--- Dummy TPM2B_SENSITIVE structure to work out size of encrypted data ---//
+    UINT16               sensitive_size;
+    TPMT_SENSITIVE_DUMMY sensitiveArea;
+           
+};
+BigEndian();
+TPM2B_SENSITIVE_DUMMY sensitive;

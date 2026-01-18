@@ -56,6 +56,22 @@ struct TPM2B_PRIVATE_W_DUMMY{
       // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
       SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
     };
+     typedef struct {
+   TPMI_ALG_PUBLIC      type;
+   TPMI_ALG_HASH        nameAlg;
+   TPMA_OBJECT          objectAttributes;
+      UINT16    authPolicy_size;
+      BYTE      authPolicy_buffer[32];
+TPMI_ALG_KEYEDHASH_SCHEME    keyedHashDetail;
+      UINT16    unique_size;
+      BYTE      unique_buffer[32];
+ } TPMT_PUBLIC_DUMMY;
+
+// Table 184 - TPM2B_PUBLIC Structure
+typedef struct {
+  UINT16         size;
+  TPMT_PUBLIC_DUMMY    publicArea;
+} TPM2B_PUBLIC_DUMMY;
 struct TPM2_StartAuthSession{
     TPMI_ST_COMMAND_TAG tag <format = hex>;
     UINT32  commandSize <format = hex>;
@@ -72,12 +88,15 @@ struct TPM2_Create_Request{
     UINT32  commandSize ;
     TPM_CC  commandCode <format = hex>;
     TPMI_DH_OBJECT  parentHandle <format = hex>;
-      UINT16    size;
-      TPMS_SENSITIVE_CREATE insensitive;  
-
+      UINT32    size;
+ // TPM2B_AUTH        authValue;
+      UINT16    authValue_size;
+      BYTE      authValue_buffer[20];
+            UINT16    SENSITIVE_DATA_size;
+      BYTE      SENSITIVE_DATA_buffer[80];
   /*Wraps for TPMU_SENSITIVE_CREATE*/
   //BYTE      buffer[size];    
-    TPM2B_PUBLIC    inPublic;
+    TPM2B_PUBLIC_DUMMY    inPublic;
     TPM2B_DATA  outsideInfo;
     TPML_PCR_SELECTION creationPCR;
     };

@@ -90,9 +90,18 @@ typedef struct  {
     tmp = 510 - (FTell() - startof(jmp)) - 110; // 420 for FAT32, 448 for FAT16/12
 
     //--------------------------------------
-    //--- Added Bitlocker Specific Metadata
+    //--- Added Bitlocker Specific Metadata as shown in:
+    //--- https://github.com/libyal/libbde/blob/main/libbde/bde_volume.h#L153-L273 (Metz, 2022)
+    //--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Drive/vbr.h#L15-L49 (thewhiteninja, 2022)
+    //--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/metadata.priv.h#L53-L107 (Coltel and Consultants, 2022)
     UBYTE  BootCode1[70]       <format=hex>;
-    GUID   BitlockerID;
+
+    //----------------//
+    //--- GUID Seemingly fixed at {4967d63b-2e29- 4ad8-8399-f6a339e3d00} corroborated by:
+    //--- https://link.springer.com/chapter/10.1007/978-3-319-14289-0_2 (Shabana Subair et al., 2014)
+    GUID   BitlockerID; 
+    //----------------//
+    
     uint64  FVEMetatdata1      <format=hex>;
     uint64  FVEMetatdata2      <format=hex>;
     uint64  FVEMetatdata3      <format=hex>;
@@ -246,7 +255,7 @@ enum<WORD> BITLOCKER_VERSION{
 struct FVE_METADATA_HEADER 
 {
     //--- Must be '-FVE-FS-' ---//
-	char signature[ 8 ];
+	char signature[8];
 
     //---------------------------------------
     //--- Size of FVE metadata (from above signature) not including validation data ---//
@@ -277,11 +286,11 @@ struct FVE_METADATA_HEADER
         * checked when this->curr_state == 2. It begins at the offset described by
         * this->encrypted_volume_size
         */
-	int convert_size <format=hex>;
+	int ConvertSize <format=hex>;
     //--------------------------------------//
 
-    //--- Likely number of volume sectors, though sources differ on their interpretation --//
-	int number_of_volume_header_sectors;
+    //--- Likely number of sectors in decrypted volume, though sources differ on their interpretation --//
+	int VolHeadSecNo;
 
 	/* The first FVE metadata offset
 	 * Consists of 8 bytes
@@ -316,7 +325,7 @@ typedef DatumTypeStruct* DatumTypes[MAX_DATUM_TYPES];
 
 //--- An array of the values in fveapi.dll's Global
 local DatumTypeStruct DatumTypes[MAX_DATUM_TYPES] = {
-//---FveDatumErasedTypeProp, 0,              {08h,false},
+//---FveDatumErasedTypeProp, 0,              {08h,0},
 //---FveDatumKeyTypeProp, 1                  {0Ch,0},
 //---FveDatumUnicodeTypeProp, 2              {08h,0},
 //---FveDatumStretchKeyTypeProp, 3           {1Ch,true},
@@ -380,7 +389,7 @@ enum<WORD> DATUM_TYPES{
 //--- Enum of Datum 'roles'
 //--- Created from:
 //--- https://github.com/mbroz/cryptsetup/blob/main/lib/bitlk/bitlk.h#L57-L65 (Trefny, Broz and Hat, 2024)
-//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28 (thewhiteninja, 2021)
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/fve.h#L28 (thewhiteninja, 2022)
 //--- https://github.com/libyal/libbde/blob/main/libbde/libbde_definitions.h.in#L106-L121 (Metz, 2022)
 //--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/datums.h#L78-L93 (Coltel and Consultants, 2022)
 
@@ -390,7 +399,7 @@ enum<WORD> ROLE_TYPES{
 
     VMK             = 0x2, //*//
     FVEK            = 0x3, 
-    VALIDATION_0      = 0x4,
+    VALIDATION_0    = 0x4,
     
     //---------------------
     //--- Inferred from unsealed TPM only VMK ---//
@@ -401,11 +410,11 @@ enum<WORD> ROLE_TYPES{
     EXT_KEY         = 0x6,
     DESCRIPTION     = 0x7, //*//
 
-    FVEK_BAK        = 0xb, //--- AKA AUTO_UNLOCK in thewhiteninja (2021) ---//
+    FVEK_BAK        = 0xb, //--- AKA AUTO_UNLOCK in thewhiteninja (2022) ---//
 
     VOL_HEAD        = 0xf,
 
-    VALIDATION_1 = 0x11, //--- Only seen with FveDatumValidationInfoTypeProp (structure out of scope) ---//
+    VALIDATION_1    = 0x11, //--- Only seen with FveDatumValidationInfoTypeProp (structure out of scope) ---//
 
     //---Exclusively listed in Trefny, Broz and Hat (2024)---//
     VOL_GUID        = 0x19
@@ -419,57 +428,61 @@ enum<WORD> ROLE_TYPES{
 enum<ushort> ENC_TYPES
 {
     //--------------------------------------------------
-    //--- These Encryption types verified from RE of functions:
-    //--- FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
-    //--- in fveapi.dll (function names from fveapi.pdb)---//
-	STRETCH_RECOVERY_PASSWORD   = 0x1000,
-    STRETCH_KEY_1   = 0x1001,
+    //----- These Encryption types verified from RE of functions:
+    //----- FveVmkInfoConvertCreateParams, FveVmkInfoCreate and FveDatumPerformConcatHash
+    //----- in fveapi.dll (function names from fveapi.pdb)
+	STRETCH_RECOVERY_PASSWORD       = 0x1000,
+    STRETCH_KEY_PASSPHRASE          = 0x1001,
 
-	AES_CCM_256_0 = 0x2000,
-	AES_CCM_256_1 = 0x2001,
-	AES_CCM_256_EXTERN_KEY    = 0x2002,
-	AES_CCM_256_VMK           = 0x2003,
-	AES_CCM_256_PIN = 0x2004,
+	AES_CCM_256_0                   = 0x2000,
+	AES_CCM_256_1                   = 0x2001,
+	AES_CCM_256_EXTERN_KEY          = 0x2002,
+	AES_CCM_256_VMK                 = 0x2003,
+	AES_CCM_256_PIN                 = 0x2004,
     
     //--- From FveDatumPerformConcatHash ---//
-	AES_CCM_256_CONCAT_HASH      = 0x2005,
+	AES_CCM_256_CONCAT_HASH         = 0x2005,
 
-	AES_CCM_256_PUBLIC_KEY      = 0x2006,
-	AES_CCM_256_PASSPHRASE     = 0x2007,
-    AES_CCM_256_REOCVERY_PASSWORD = 0x2008,
+	AES_CCM_256_PUBLIC_KEY          = 0x2006,
+	AES_CCM_256_PASSPHRASE          = 0x2007,
+    AES_CCM_256_RECOVERY_PASSWORD   = 0x2008,
     //-------------------------------------------------//
     
     //-------------------
     //--- Inferred from below reverse engineering and Coltel and Consultants (2022)
-	AES_128_WITH_DIFFUSER    = 0x8000,
-	AES_256_WITH_DIFFUSER    = 0x8001,
+	AES_128_WITH_DIFFUSER           = 0x8000,
+	AES_256_WITH_DIFFUSER           = 0x8001,
     //------------------//
 
     //-------------------
     //--- Confirmed using GetEncryptionMethod in Win32_EncryptableVolume (Microsoft, 2021a)
     //--- And CFveApiBase::MapFveMethodToFvekType from fveapi.dll
-	AES_128 = 0x8002,
-	AES_256 = 0x8003,
-	XTS_AES_128         = 0x8004,
-	XTS_AES_256         = 0x8005,
+	AES_128                         = 0x8002,
+	AES_256                         = 0x8003,
+	XTS_AES_128                     = 0x8004,
+	XTS_AES_256                     = 0x8005,
     //------------------//
 
     //--- Directly from Coltel and Consultants (2022) (not confirmed) ---//
-	DIS_CIPHER_LOWEST_SUPPORTED  = 0x8000,
-	DIS_CIPHER_HIGHEST_SUPPORTED = 0x8005,
+	DIS_CIPHER_LOWEST_SUPPORTED     = 0x8000,
+	DIS_CIPHER_HIGHEST_SUPPORTED    = 0x8005,
 };
 //----------------------------------------------------------------//
 
 
 //-----------------------------------------------------------------
 //--- From https://github.com/Wack0/CVE-2022-21894/blob/main/tools/FveAddMetadataForPolicy.c (’Wack0’, 2023)
+//--- Correlated against https://github.com/libyal/libbde/blob/main/libbde/bde_metadata.h#L156-L203 (Metz, 2022)
+//--- https://github.com/thewhiteninja/ntfstool/blob/master/Sources/Bitlocker/bitlocker.h#L33-L44 (thewhiteninja, 2022)
+//--- https://github.com/Aorimn/dislocker/blob/master/include/dislocker/metadata/metadata.priv.h#L116-L130 (Coltel and Consultants, 2022)
 //--- The name FVE Dataset is corroborated with symbols present in fveapi.pdb
+//--- RE of FveDatasetGetNext confirms the function of certain values
 struct _FVE_DATASET
 {
   unsigned int DataSetSize <format=hex>;
   unsigned int DataSetVersion;
-  unsigned int DataSetStart;
-  unsigned int DataSetEnd;
+  unsigned int DataSetStart <format=hex>;
+  unsigned int DataSetEnd <format=hex>;
   GUID FveIdentification;
   unsigned int NonceCounter;
   //-----------------
@@ -483,7 +496,7 @@ struct _FVE_DATASET
 //--- The name FVE Datum is corroborated with symbols present in fveapi.pdb
 struct  _FVE_DATUM
 {
-  WORD StructureSize;
+  WORD DatumSize;
   
   //-----------------
   //--- Changed from WORD to ROLE_TYPES and DATUM_TYPES
@@ -492,6 +505,49 @@ struct  _FVE_DATUM
   //----------------//
 
   WORD Flags;
+};
+
+//---------------------------------------
+//---Key Flags suggested by
+//---FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
+//---Supported by testing
+enum<WORD> KEY_FLAGS{
+    EnhancedPin  = 0x4,
+    NonEnhancedPin = 0x10  
+};
+
+#define VMK_SIZE 32
+#define IK_SIZE  32
+
+struct FVE_DATUM_KEY_DUMMY(char isVMKorIK){
+    _FVE_DATUM h;             //---Example Values
+    //    WORD DatumSize; // 0x002c
+    //    ROLE_TYPES Role;    // 0x0000
+    //    DATUM_TYPES Type;   // 0x0001
+    //    WORD Flags;         // 0x0000
+    
+    ENC_TYPES KeyType; //---AES_CCM_256_VMK---//
+    KEY_FLAGS KeyFlags;   //---0x0000---//
+    if (isVMKorIK == 0){
+        BYTE VMK[VMK_SIZE];
+    }else if (isVMKorIK == 1){
+        BYTE IK[IK_SIZE];
+    };
+};
+
+
+struct FVE_DATUM_AESCCM_ENC_DUMMY  {
+    _FVE_DATUM h;      //---Example Values
+    //    WORD DatumSize; // 0x0050
+    //    ROLE_TYPES Role;    // 0x0000
+    //    DATUM_TYPES Type;   // 0x0005
+    //    WORD Flags;         // 0x0000
+    FILETIME nonceTime;
+    int nonceCounter;
+    byte HMAC[16] <format=hex>;
+
+    //--- Intermediate key AES-CCM Encrypted with stretched PIN ----//
+    FVE_DATUM_KEY_DUMMY EncIKKeyDatum(1);
 };
 //---------------------------------------------------------------//
 
@@ -561,14 +617,7 @@ string READ_PROTECTOR_TYPE(PROTECTOR_TYPES &flag){
     return RetStr;
 };
 
-//---------------------------------------
-//---Key Flags suggested by
-//---FveDatumVmkQueryIsEnhancedPinOrEnhancedCrypto and FveDatumFromPin
-//---Supported by testing
-enum<WORD> KEY_FLAGS{
-    EnhancedPin  = 0x4,
-    NonEnhancedPin = 0x10  
-};
+
 //---------------------------------------//
 
 //---Forward declaration
@@ -680,40 +729,6 @@ typedef struct{
     byte PCR_23 : 1;
     }  PCR_BITMAP  <read = readPCR_BITMAP>;
 
-#define VMK_SIZE 32
-#define IK_SIZE  32
-
-struct FVE_DATUM_KEY_DUMMY(char isVMKorIK){
-    _FVE_DATUM h;             //---Example Values
-    //    WORD StructureSize; // 0x002c
-    //    ROLE_TYPES Role;    // 0x0000
-    //    DATUM_TYPES Type;   // 0x0001
-    //    WORD Flags;         // 0x0000
-    
-    ENC_TYPES KeyType; //---AES_CCM_256_VMK---//
-    KEY_FLAGS KeyFlags;   //---0x0000---//
-    if (isVMKorIK == 0){
-        BYTE VMK[VMK_SIZE];
-    }else if (isVMKorIK == 1){
-        BYTE IK[IK_SIZE];
-    };
-};
-
-
-struct FVE_DATUM_AESCCM_ENC_DUMMY  {
-    _FVE_DATUM h;      //---Example Values
-    //    WORD StructureSize; // 0x0050
-    //    ROLE_TYPES Role;    // 0x0000
-    //    DATUM_TYPES Type;   // 0x0005
-    //    WORD Flags;         // 0x0000
-    FILETIME nonceTime;
-    int nonceCounter;
-    byte HMAC[16] <format=hex>;
-
-    //--- Intermediate key AES-CCM Encrypted with stretched PIN ----//
-    FVE_DATUM_KEY_DUMMY EncIKKeyDatum(1);
-};
-
 //---------------------------------------
 //--- Encrypted data dummy structure, including Bitlocker specific structs
 //--- This structure assumes that the encrypted data size is the same as the plaintext data size
@@ -805,7 +820,7 @@ struct TPM2B_PRIVATE_DUMMY{
     //-------------------------------//
 
         // byte    encryptedSensitive[size-integrityOuter.size-integrityInner.size-4]:
-        TPM2B_SENSITIVE_DUMMY    encryptedSensitive(outPrivate_size);
+        TPM2B_SENSITIVE_DUMMY    encryptedSensitiveArea(outPrivate_size);
     };
 
 //--- Forward declaration for recursion
@@ -820,10 +835,10 @@ struct _FVE_DATUM_TEMP
     ENC_TYPES KeyType;
     //--- May not be the same flags as the stretch key flags ---//
     KEY_FLAGS KeyFlags;
-    byte KeyData[h.StructureSize-12];
+    byte KeyData[h.DatumSize-12];
     }
   else if (h.Type == FveDatumUnicodeTypeProp){
-    wchar_t UnicodeData[(h.StructureSize-8)/2];
+    wchar_t UnicodeData[(h.DatumSize-8)/2];
   }
   else if (h.Type == FveDatumStretchKeyTypeProp){
     //--- Stretch encryption method (seen 0x1000 for recovery password and 0x2004 for TPM + PIN) ---//
@@ -838,13 +853,13 @@ struct _FVE_DATUM_TEMP
 	byte salt[16] <format = hex>;
     
     //--- Nested datums as denoted by DatumTypes ---//
-    local int Datums = GetNoOfDatums(h.StructureSize-28);
+    local int Datums = GetNoOfDatums(h.DatumSize-28);
     _FVE_DATUM_TEMP StretchDatums[Datums] <read = READ_DATUM_TYPE,optimize=false>;
   }
   else if (h.Type == FveDatumUseKeyTypeProp){
       //--- Header size is _FVE_DATUM + 4 as denoted by DatumTypes ---//
       byte UseKeyData[4];
-      byte DatumData[h.StructureSize-12];
+      byte DatumData[h.DatumSize-12];
   }
   else if (h.Type == FveDatumAesCcmEncTypeProp){
       //------------------------------------------
@@ -855,7 +870,7 @@ struct _FVE_DATUM_TEMP
       FILETIME nonceTime;
       int nonceCounter;
       byte HMAC[16] <format=hex>;
-      byte AesCCMData[h.StructureSize-36];  
+      byte AesCCMData[h.DatumSize-36];  
       //----------------------------------------//
   }
   else if (h.Type == FveDatumTpmEncBlobTypeProp){
@@ -876,10 +891,10 @@ struct _FVE_DATUM_TEMP
       TPM2B_PRIVATE_DUMMY outPrivateDummy;
 
       TPM2B_PUBLIC outPublic;
-      TPM2B_DIGEST PCRDigest;
+      TPM2B_DIGEST pcrDigest;
       LittleEndian();
-      byte sizeOfBitmap <format = hex>;
-      PCR_BITMAP PCRBitmap_End;
+      byte sizeofSelect <format = hex>;
+      PCR_BITMAP pcrSelect;
       //---------------------------------------------------------//
   }
   else if (h.Type == FveDatumVmkInfoTypeProp){
@@ -887,10 +902,10 @@ struct _FVE_DATUM_TEMP
         //--- Inital structure from https://github.com/Wack0/CVE-2022-21894/blob/main/tools/FveAddMetadataForPolicy.c (’Wack0’, 2023)
         //--- Modified with protector types and nested datums
         GUID Identifier;
-        FILETIME DateTime;
+        FILETIME ProtectionTime;
         WORD VmkHints;
         PROTECTOR_TYPES ProtectionType<read=READ_PROTECTOR_TYPE>;
-        local int Datums = GetNoOfDatums(h.StructureSize-36);
+        local int Datums = GetNoOfDatums(h.DatumSize-36);
         _FVE_DATUM_TEMP VMKDatums[Datums] <read = READ_DATUM_TYPE,optimize=false>;
         //------------------------------//
   }
@@ -901,12 +916,12 @@ struct _FVE_DATUM_TEMP
         UINT64 NTFSBootSectorsAddr;
 	    UINT64 BackupBytes;
         extended_info_t ExtendedInfo; 
-        byte ExtExtInfo[h.StructureSize-sizeof(_FVE_DATUM)-sizeof(UINT64)-sizeof(UINT64)-sizeof(extended_info_t)];
+        byte ExtExtInfo[h.DatumSize-sizeof(_FVE_DATUM)-sizeof(UINT64)-sizeof(UINT64)-sizeof(extended_info_t)];
         //---------------------------//
   }
   else{
     //--- Any other types are out of scope for TPM + PIN analysis ---//
-      byte KeyData[h.StructureSize-8];
+      byte KeyData[h.DatumSize-8];
   }
     
 };
@@ -938,8 +953,11 @@ struct FveHeaderBlock(int currOffset){
     _FVE_DATASET FVEDataset;
     local int Datums = GetNoOfDatums(FVEDataset.DataSetSize - FVEDataset.DataSetStart);
     _FVE_DATUM_TEMP DATUMS[Datums] <read = READ_DATUM_TYPE, optimize=false>;
-    //--- Not mentioned by other reverse engineers but makes the metadata the correct size ---//
-    byte reserved[14];
+    //------------------------
+    //--- Only mentioned by:
+    //--- https://github.com/libyal/libbde/blob/main/documentation/BitLocker%20Drive%20Encryption%20(BDE)%20format.asciidoc#5-fve-metadata-block (Metz, 2022)
+    byte padding[FVEBlockHeader.size*16-FVEDataset.DataSetSize-0x40];
+    //-----------------------//
 };
 
 FSeek(header.FVEMetatdata1);
